@@ -6,10 +6,11 @@
 #include "Constant.hpp"
 #include <chrono>
 #include <future>
+#include "syncClient.hpp"
 #include "syncServer.hpp"
 
 const string MY_PLUGIN_NAME = "VCH";
-const string MY_PLUGIN_VERSION = "0.0.4";
+const string MY_PLUGIN_VERSION = "0.1.0";
 const string MY_PLUGIN_DEVELOPER = "Jan Fries";
 const string MY_PLUGIN_COPYRIGHT = "GPL v3";
 const string MY_PLUGIN_VIEW_AVISO = "Kleine Helferlein in Euroscope";
@@ -35,6 +36,10 @@ public:
 
 	virtual void displayMessage(string message);
 
+	virtual void displayError(string message);
+
+	virtual int findSequence(vector<string> seqMe, CFlightPlan seqThis);
+
 	virtual void setupSyncServer();
 
 	virtual void setupSyncClient();
@@ -46,7 +51,5 @@ public:
 	virtual void setTaxi();
 
 	virtual void resetRequest();
-
-	virtual string getTimestamp();
 
 };
