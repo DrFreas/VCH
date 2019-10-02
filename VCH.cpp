@@ -21,5 +21,6 @@ void    __declspec (dllexport)    EuroScopePlugInExit(void)
 {
 
 		// delete the instance
-	delete gpMyPlugin;
+		gpMyPlugin->syncServerThread._Abandon();
+		delete gpMyPlugin;
 }

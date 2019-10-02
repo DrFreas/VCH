@@ -18,6 +18,12 @@ const int TAG_FUNC_VCH_CLEARENCE = 546;
 const int TAG_FUNC_VCH_PUSHBACK = 547;
 const int TAG_FUNC_VCH_TAXI = 548;
 
+const int SYNC_REQUEST = 100;
+
+const int SYNC_NO = 0;
+const int SYNC_SERVER = 1;
+const int SYNC_CLIENT = 2;
+
 inline static bool startsWith(const char *pre, const char *str)
 {
 	size_t lenpre = strlen(pre), lenstr = strlen(str);

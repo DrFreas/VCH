@@ -1,12 +1,15 @@
 #pragma once
 #include "EuroScopePlugIn.h"
+#include <iostream>
 #include <string>
 #include <algorithm>
 #include "Constant.hpp"
 #include <chrono>
+#include <future>
+#include "syncServer.hpp"
 
 const string MY_PLUGIN_NAME = "VCH";
-const string MY_PLUGIN_VERSION = "0.0.3";
+const string MY_PLUGIN_VERSION = "0.0.4";
 const string MY_PLUGIN_DEVELOPER = "Jan Fries";
 const string MY_PLUGIN_COPYRIGHT = "GPL v3";
 const string MY_PLUGIN_VIEW_AVISO = "Kleine Helferlein in Euroscope";
@@ -25,4 +28,25 @@ public:
 	virtual void OnFunctionCall(int FunctionId, const char * sItemString, POINT Pt, RECT Area);
 
 	virtual void OnTimer(int Counter);
+
+	future<void> syncServerThread;
+
+	future<void> syncClientThread;
+
+	virtual void displayMessage(string message);
+
+	virtual void setupSyncServer();
+
+	virtual void setupSyncClient();
+
+	virtual void setClearence();
+
+	virtual void setPushback();
+	
+	virtual void setTaxi();
+
+	virtual void resetRequest();
+
+	virtual string getTimestamp();
+
 };
