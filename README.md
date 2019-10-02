@@ -26,3 +26,6 @@ How to setup:
 - Width: 3
 - Align to center: checked
 - Left button: VCH / Request menu
+
+Pictures:
+https://imgur.com/a/EPk0ACd
