@@ -17,6 +17,7 @@ This is what it does on its own:
 
 This is what is planned for the future:
 - synchronization between multiple instances of Euroscope (if you can do socket programming in C++, tell me!)
+- similar dropdown menu for "hold shorts"(, with all taxiways of current airport automatically in)
 - maybe some other useful features, what do you want? Let me know.
 
 How to setup:
