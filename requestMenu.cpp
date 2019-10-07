@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "requestMenu.hpp"
 
-using namespace std;
-
 clock_t timerOn;
 
 bool FLASH = false;
@@ -23,8 +21,7 @@ void CVCHPlugin::displayError(string message) {
 
 int CVCHPlugin::findSequence(vector<string> seqMe, CFlightPlan seqThis) {
 	// Get the sequence of a request
-	int seq = distance(seqMe.begin(), find(seqMe.begin(), seqMe.end(), seqThis.GetCallsign())) + 1;
-	return seq;
+	return distance(seqMe.begin(), find(seqMe.begin(), seqMe.end(), seqThis.GetCallsign())) + 1;
 }
 
 void CVCHPlugin::setupSyncServer() {
@@ -51,7 +48,7 @@ CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILI
 
 	timerOn = clock();
 
-	DisplayUserMessage("Message", "VCH", std::string("Version " + MY_PLUGIN_VERSION + " loaded").c_str(), false, false, false, false, false);
+	DisplayUserMessage("Message", "VCH", string("Version " + MY_PLUGIN_VERSION + " loaded").c_str(), false, false, false, false, false);
 }
 
 CVCHPlugin::~CVCHPlugin()
@@ -66,9 +63,9 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan FlightPlan, CRadarTarget RadarTarget, 
 				
 				*pColorCode = TAG_COLOR_RGB_DEFINED;
 				if (FLASH)
-					*pRGB = RGB(0, 255, 0);
+					*pRGB = TAG_GREEN;
 				else
-					*pRGB = RGB(130, 190, 130);
+					*pRGB = TAG_LIGHTGREEN;
 
 				string status{"R" + to_string(findSequence(AircraftRequestingClearence, FlightPlan)) + "C"};
 
@@ -79,9 +76,9 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan FlightPlan, CRadarTarget RadarTarget, 
 
 				*pColorCode = TAG_COLOR_RGB_DEFINED;
 				if (FLASH)
-					*pRGB = RGB(255, 255, 0);
+					*pRGB = TAG_YELLOW;
 				else
-					*pRGB = RGB(190, 190, 130);
+					*pRGB = TAG_LIGHTYELLOW;
 
 				string status{ "R" + to_string(findSequence(AircraftRequestingPushback, FlightPlan)) + "P" };
 
@@ -91,17 +88,18 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan FlightPlan, CRadarTarget RadarTarget, 
 
 				*pColorCode = TAG_COLOR_RGB_DEFINED;
 				if (FLASH)
-					*pRGB = RGB(255, 0, 0);
+					*pRGB = TAG_RED;
 				else
-					*pRGB = RGB(190, 130, 130);
+					*pRGB = TAG_LIGHTRED;
 
 				string status{ "R" + to_string(findSequence(AircraftRequestingTaxi, FlightPlan)) + "T" };
 
 				strcpy_s(sItemString, 16, status.c_str());
+
 			}
 			else {
 				*pColorCode = TAG_COLOR_RGB_DEFINED;
-				*pRGB = RGB(130, 130, 130);
+				*pRGB = TAG_GREY;
 
 				strcpy_s(sItemString, 16, "-");
 			}
@@ -137,8 +135,6 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan FlightPlan, CRadarTarget RadarTarget, 
 void CVCHPlugin::OnFunctionCall(int FunctionId, const char * sItemString, POINT Pt, RECT Area)
 {
 	if (FunctionId == TAG_FUNC_VCH_MENU) {
-		CFlightPlan FlightPlan = FlightPlanSelectASEL();
-
 		OpenPopupList(Area, "Request menu", 1);
 		AddPopupListElement("Clearence", "", TAG_FUNC_VCH_CLEARENCE, false, 2, false);
 		AddPopupListElement("Pushback", "", TAG_FUNC_VCH_PUSHBACK, false, 2, false);
@@ -147,94 +143,81 @@ void CVCHPlugin::OnFunctionCall(int FunctionId, const char * sItemString, POINT 
 	}
 
 	if (FunctionId == TAG_FUNC_VCH_CLEARENCE) {
-		setClearence();
+		setClearence(true, FlightPlanSelectASEL());
 	}
 
 	if (FunctionId == TAG_FUNC_VCH_PUSHBACK) {
-		setPushback();
+		setPushback(true, FlightPlanSelectASEL());
 	}
 
 	if (FunctionId == TAG_FUNC_VCH_TAXI) {
-		setTaxi();
+		setTaxi(true, FlightPlanSelectASEL());
 	}
 
 	if (FunctionId == TAG_FUNC_VCH_RESET) {
-		resetRequest();
+		resetRequest(FlightPlanSelectASEL());
 	}
 }
 
-void CVCHPlugin::setClearence() {
-	CFlightPlan FlightPlan = FlightPlanSelectASEL();
-
-	if (FlightPlan.IsValid()) {
-
-		if (find(AircraftRequestingClearence.begin(), AircraftRequestingClearence.end(), FlightPlan.GetCallsign()) == AircraftRequestingClearence.end()) {
-			AircraftRequestingClearence.push_back(FlightPlan.GetCallsign());
+void CVCHPlugin::setClearence(bool status, CFlightPlan flightPlan) {
+	if (status) {
+		if (flightPlan.IsValid()) {
+			if (find(AircraftRequestingClearence.begin(), AircraftRequestingClearence.end(), flightPlan.GetCallsign()) == AircraftRequestingClearence.end()) {
+				AircraftRequestingClearence.push_back(flightPlan.GetCallsign());
+			}
+			setPushback(false, flightPlan);	
+			setTaxi(false, flightPlan);
+		} else {
+			displayError("Flightplan not valid!");
 		}
-
-		if (std::find(AircraftRequestingPushback.begin(), AircraftRequestingPushback.end(), FlightPlan.GetCallsign()) != AircraftRequestingPushback.end()) {
-			AircraftRequestingPushback.erase(std::remove(AircraftRequestingPushback.begin(), AircraftRequestingPushback.end(), FlightPlan.GetCallsign()), AircraftRequestingPushback.end());
-		}
-		if (std::find(AircraftRequestingTaxi.begin(), AircraftRequestingTaxi.end(), FlightPlan.GetCallsign()) != AircraftRequestingTaxi.end()) {
-			AircraftRequestingTaxi.erase(std::remove(AircraftRequestingTaxi.begin(), AircraftRequestingTaxi.end(), FlightPlan.GetCallsign()), AircraftRequestingTaxi.end());
-		}
-	}
-
-}
-
-void CVCHPlugin::setPushback() {
-	CFlightPlan FlightPlan = FlightPlanSelectASEL();
-
-	if (FlightPlan.IsValid()) {
-
-		if (find(AircraftRequestingPushback.begin(), AircraftRequestingPushback.end(), FlightPlan.GetCallsign()) == AircraftRequestingPushback.end()) {
-			AircraftRequestingPushback.push_back(FlightPlan.GetCallsign());
-		}
-
-		if (std::find(AircraftRequestingClearence.begin(), AircraftRequestingClearence.end(), FlightPlan.GetCallsign()) != AircraftRequestingClearence.end()) {
-			AircraftRequestingClearence.erase(std::remove(AircraftRequestingClearence.begin(), AircraftRequestingClearence.end(), FlightPlan.GetCallsign()), AircraftRequestingClearence.end());
-		}
-		if (std::find(AircraftRequestingTaxi.begin(), AircraftRequestingTaxi.end(), FlightPlan.GetCallsign()) != AircraftRequestingTaxi.end()) {
-			AircraftRequestingTaxi.erase(std::remove(AircraftRequestingTaxi.begin(), AircraftRequestingTaxi.end(), FlightPlan.GetCallsign()), AircraftRequestingTaxi.end());
+	} else {	
+		if (std::find(AircraftRequestingClearence.begin(), AircraftRequestingClearence.end(), flightPlan.GetCallsign()) != AircraftRequestingClearence.end()) {
+			AircraftRequestingClearence.erase(std::remove(AircraftRequestingClearence.begin(), AircraftRequestingClearence.end(), flightPlan.GetCallsign()), AircraftRequestingClearence.end());
 		}
 	}
-
 }
 
-void CVCHPlugin::setTaxi() {
-	CFlightPlan FlightPlan = FlightPlanSelectASEL();
-
-	if (FlightPlan.IsValid()) {
-
-		if (find(AircraftRequestingTaxi.begin(), AircraftRequestingTaxi.end(), FlightPlan.GetCallsign()) == AircraftRequestingTaxi.end()) {
-			AircraftRequestingTaxi.push_back(FlightPlan.GetCallsign());
-		}
-
-		if (std::find(AircraftRequestingClearence.begin(), AircraftRequestingClearence.end(), FlightPlan.GetCallsign()) != AircraftRequestingClearence.end()) {
-			AircraftRequestingClearence.erase(std::remove(AircraftRequestingClearence.begin(), AircraftRequestingClearence.end(), FlightPlan.GetCallsign()), AircraftRequestingClearence.end());
-		}
-		if (std::find(AircraftRequestingPushback.begin(), AircraftRequestingPushback.end(), FlightPlan.GetCallsign()) != AircraftRequestingPushback.end()) {
-			AircraftRequestingPushback.erase(std::remove(AircraftRequestingPushback.begin(), AircraftRequestingPushback.end(), FlightPlan.GetCallsign()), AircraftRequestingPushback.end());
+void CVCHPlugin::setPushback(bool status, CFlightPlan flightPlan) {
+	if (status) {
+		if (flightPlan.IsValid()) {
+			if (find(AircraftRequestingPushback.begin(), AircraftRequestingPushback.end(), flightPlan.GetCallsign()) == AircraftRequestingPushback.end()) {
+				AircraftRequestingPushback.push_back(flightPlan.GetCallsign());
+			}
+			setClearence(false, flightPlan);
+			setTaxi(false, flightPlan);
+		} else {
+			displayError("Flightplan not valid!");
+		}		
+	} else {
+		if (std::find(AircraftRequestingPushback.begin(), AircraftRequestingPushback.end(), flightPlan.GetCallsign()) != AircraftRequestingPushback.end()) {
+			AircraftRequestingPushback.erase(std::remove(AircraftRequestingPushback.begin(), AircraftRequestingPushback.end(), flightPlan.GetCallsign()), AircraftRequestingPushback.end());
 		}
 	}
 
 }
 
-void CVCHPlugin::resetRequest() {
-	CFlightPlan FlightPlan = FlightPlanSelectASEL();
-
-	if (FlightPlan.IsValid()) {
-		if (std::find(AircraftRequestingClearence.begin(), AircraftRequestingClearence.end(), FlightPlan.GetCallsign()) != AircraftRequestingClearence.end()) {
-			AircraftRequestingClearence.erase(std::remove(AircraftRequestingClearence.begin(), AircraftRequestingClearence.end(), FlightPlan.GetCallsign()), AircraftRequestingClearence.end());
+void CVCHPlugin::setTaxi(bool status, CFlightPlan flightPlan) {
+	if (status) {
+		if (flightPlan.IsValid()) {
+			if (find(AircraftRequestingTaxi.begin(), AircraftRequestingTaxi.end(), flightPlan.GetCallsign()) == AircraftRequestingTaxi.end()) {
+				AircraftRequestingTaxi.push_back(flightPlan.GetCallsign());
+			}
+			setClearence(false, flightPlan);
+			setTaxi(false, flightPlan);
+		} else {
+			displayError("Flightplan not valid!");
 		}
-		if (std::find(AircraftRequestingPushback.begin(), AircraftRequestingPushback.end(), FlightPlan.GetCallsign()) != AircraftRequestingPushback.end()) {
-			AircraftRequestingPushback.erase(std::remove(AircraftRequestingPushback.begin(), AircraftRequestingPushback.end(), FlightPlan.GetCallsign()), AircraftRequestingPushback.end());
-		}
-		if (std::find(AircraftRequestingTaxi.begin(), AircraftRequestingTaxi.end(), FlightPlan.GetCallsign()) != AircraftRequestingTaxi.end()) {
-			AircraftRequestingTaxi.erase(std::remove(AircraftRequestingTaxi.begin(), AircraftRequestingTaxi.end(), FlightPlan.GetCallsign()), AircraftRequestingTaxi.end());
+	} else {
+		if (std::find(AircraftRequestingTaxi.begin(), AircraftRequestingTaxi.end(), flightPlan.GetCallsign()) != AircraftRequestingTaxi.end()) {
+			AircraftRequestingTaxi.erase(std::remove(AircraftRequestingTaxi.begin(), AircraftRequestingTaxi.end(), flightPlan.GetCallsign()), AircraftRequestingTaxi.end());
 		}
 	}
+}
 
+void CVCHPlugin::resetRequest(CFlightPlan flightPlan) {
+	setClearence(false, flightPlan);
+	setPushback(false, flightPlan);
+	setTaxi(false, flightPlan);
 }
 
 void CVCHPlugin::OnTimer(int Counter)
@@ -244,7 +227,7 @@ void CVCHPlugin::OnTimer(int Counter)
 	if (((clock() - timerOn) / CLOCKS_PER_SEC) > 5) {
 		FLASH = true;
 		timerOn = clock();
-		if (sync == SYNC_NO /*&& GetConnectionType() == CONNECTION_TYPE_DIRECT*/ && GetConnectionType() != CONNECTION_TYPE_VIA_PROXY) {
+		if (sync == SYNC_NO && GetConnectionType() == CONNECTION_TYPE_DIRECT && GetConnectionType() != CONNECTION_TYPE_VIA_PROXY) {
 			sync = SYNC_SERVER;
 			/*syncServerThread = async(launch::async, [this] {
 				setupSyncServer();
@@ -273,27 +256,21 @@ void CVCHPlugin::OnTimer(int Counter)
 		CFlightPlan flightPlan = FlightPlanSelect(callsign.c_str());
 		CRadarTarget radarTarget = RadarTargetSelect(callsign.c_str());
 		if (!flightPlan.IsValid() || radarTarget.GetGS() > 80) {
-			if (std::find(AircraftRequestingClearence.begin(), AircraftRequestingClearence.end(), callsign) != AircraftRequestingClearence.end()) {
-				AircraftRequestingClearence.erase(std::remove(AircraftRequestingClearence.begin(), AircraftRequestingClearence.end(), callsign), AircraftRequestingClearence.end());
-			}
+			setClearence(false, flightPlan);
 		}
 	}
 	for (string callsign : AircraftRequestingPushback) {
 		CFlightPlan flightPlan = FlightPlanSelect(callsign.c_str());
 		CRadarTarget radarTarget = RadarTargetSelect(callsign.c_str());
 		if (!flightPlan.IsValid() || radarTarget.GetGS() > 80) {
-			if (std::find(AircraftRequestingPushback.begin(), AircraftRequestingPushback.end(), callsign) != AircraftRequestingPushback.end()) {
-				AircraftRequestingPushback.erase(std::remove(AircraftRequestingPushback.begin(), AircraftRequestingPushback.end(), callsign), AircraftRequestingPushback.end());
-			}
+			setPushback(false, flightPlan);
 		}
 	}
 	for (string callsign : AircraftRequestingTaxi) {
 		CFlightPlan flightPlan = FlightPlanSelect(callsign.c_str());
 		CRadarTarget radarTarget = RadarTargetSelect(callsign.c_str());
 		if (!flightPlan.IsValid() || radarTarget.GetGS() > 80) {
-			if (std::find(AircraftRequestingTaxi.begin(), AircraftRequestingTaxi.end(), callsign) != AircraftRequestingTaxi.end()) {
-				AircraftRequestingTaxi.erase(std::remove(AircraftRequestingTaxi.begin(), AircraftRequestingTaxi.end(), callsign), AircraftRequestingTaxi.end());
-			}
+			setTaxi(false, flightPlan);
 		}
 	}
 

@@ -5,18 +5,18 @@
 #include <algorithm>
 #include "Constant.hpp"
 #include <chrono>
-#include <future>
-#include "syncClient.hpp"
-#include "syncServer.hpp"
-
-const string MY_PLUGIN_NAME = "VCH";
-const string MY_PLUGIN_VERSION = "0.1.0";
-const string MY_PLUGIN_DEVELOPER = "Jan Fries";
-const string MY_PLUGIN_COPYRIGHT = "GPL v3";
-const string MY_PLUGIN_VIEW_AVISO = "Kleine Helferlein in Euroscope";
+//#include <future>
+//#include "syncClient.hpp"
+//#include "syncServer.hpp"
 
 using namespace std;
 using namespace EuroScopePlugIn;
+
+const string MY_PLUGIN_NAME = "VCH";
+const string MY_PLUGIN_VERSION = "0.1.1";
+const string MY_PLUGIN_DEVELOPER = "Jan Fries";
+const string MY_PLUGIN_COPYRIGHT = "GPL v3";
+const string MY_PLUGIN_VIEW_AVISO = "Kleine Helferlein in Euroscope";
 
 class CVCHPlugin: public EuroScopePlugIn::CPlugIn
 {
@@ -30,9 +30,9 @@ public:
 
 	virtual void OnTimer(int Counter);
 
-	future<void> syncServerThread;
+	//future<void> syncServerThread;
 
-	future<void> syncClientThread;
+	//future<void> syncClientThread;
 
 	virtual void displayMessage(string message);
 
@@ -44,12 +44,12 @@ public:
 
 	virtual void setupSyncClient();
 
-	virtual void setClearence();
+	virtual void setClearence(bool status, CFlightPlan flightPlan);
 
-	virtual void setPushback();
+	virtual void setPushback(bool status, CFlightPlan flightPlan);
 	
-	virtual void setTaxi();
+	virtual void setTaxi(bool status, CFlightPlan flightPlan);
 
-	virtual void resetRequest();
+	virtual void resetRequest(CFlightPlan flightPlan);
 
 };
