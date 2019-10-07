@@ -203,7 +203,7 @@ void CVCHPlugin::setTaxi(bool status, CFlightPlan flightPlan) {
 				AircraftRequestingTaxi.push_back(flightPlan.GetCallsign());
 			}
 			setClearence(false, flightPlan);
-			setTaxi(false, flightPlan);
+			setPushback(false, flightPlan);
 		} else {
 			displayError("Flightplan not valid!");
 		}
