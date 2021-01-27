@@ -1,7 +1,6 @@
 
-Release/VCH.tlog/unsuccessfulbuild
 *.tlog
 *.log
 *.pdb
 *.obj
-Release/*
+Release/

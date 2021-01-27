@@ -148,7 +148,10 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 		if (groundState == "ST-UP" && findInSVector(&AircraftRequestingStartup, flightPlan.GetCallsign())) {
 			delStatus(flightPlan);
 		}
-		if (groundState == "TAXI" || groundState == "DEPA") {
+		if (groundState == "TAXI" && findInSVector(&AircraftRequestingTaxi, flightPlan.GetCallsign())) {
+			delStatus(flightPlan);
+		}
+		if (groundState == "DEPA") {
 			delStatus(flightPlan);
 		}
 		// Throw out the callsign if it is not here anymore
