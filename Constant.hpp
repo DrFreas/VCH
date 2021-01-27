@@ -7,13 +7,24 @@
 #include <sstream>
 #include <iomanip>
 
-const int TAG_ITEM_VCH_STS = 444;
-const int TAG_FUNC_VCH_MENU = 544;
+const int TAG_ITEM_VCH_REQ = 540;
+const int TAG_ITEM_VCH_RQT = 541;
+const int TAG_FUNC_VCH_RMEN = 544;
 
-const int TAG_FUNC_VCH_RESET = 545;
+const int TAG_FUNC_VCH_REQRESET = 545;
 const int TAG_FUNC_VCH_CLEARENCE = 546;
 const int TAG_FUNC_VCH_PUSHBACK = 547;
-const int TAG_FUNC_VCH_TAXI = 548;
+const int TAG_FUNC_VCH_STARTUP = 548;
+const int TAG_FUNC_VCH_TAXI = 549;
+const int TAG_FUNC_VCH_DEPARTURE = 550;
+const int TAG_FUNC_VCH_SORT = 551;
+
+const int TAG_ITEM_VCH_HOS = 440;
+const int TAG_FUNC_VCH_HMEN = 444;
+
+const int TAG_FUNC_VCH_HOS = 445;
+const int TAG_FUNC_VCH_HOSTEXT = 446;
+const int TAG_FUNC_VCH_HOSRESET = 447;
 
 const int SYNC_REQUEST = 100;
 
@@ -21,13 +32,21 @@ const int SYNC_NO = 0;
 const int SYNC_SERVER = 1;
 const int SYNC_CLIENT = 2;
 
-const COLORREF TAG_GREY = RGB(130, 130, 130);
-const COLORREF TAG_GREEN = RGB(0, 255, 0);
+const int FSTRIP_ANNOTATION_HOS = 5;
+const int FSTRIP_ANNOTATION_REQ = 8;
+
 const COLORREF TAG_LIGHTGREEN = RGB(130, 190, 130);
-const COLORREF TAG_YELLOW = RGB(255, 255, 0);
 const COLORREF TAG_LIGHTYELLOW = RGB(190, 190, 130);
-const COLORREF TAG_RED = RGB(255, 0, 0);
 const COLORREF TAG_LIGHTRED = RGB(255, 130, 130);
+const COLORREF TAG_LIGHTORANGE = RGB(200, 160, 130);
+const COLORREF TAG_GREEN = RGB(0, 220, 0);
+const COLORREF TAG_RED = RGB(255, 0, 0);
+const COLORREF TAG_YELLOW = RGB(220, 220, 0);
+const COLORREF TAG_ORANGE = RGB(255, 190, 0);
+const COLORREF TAG_CYAN = RGB(0, 220, 220);
+const COLORREF TAG_BLUE = RGB(0, 0, 220);
+const COLORREF TAG_GREY = RGB(130, 130, 130);
+const COLORREF TAG_WHITE = RGB(220, 220, 220);
 
 
 inline static bool startsWith(const char *pre, const char *str)

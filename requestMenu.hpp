@@ -1,19 +1,20 @@
 #pragma once
 #include "EuroScopePlugIn.h"
+#include "usefulStuff.hpp"
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <algorithm>
 #include "Constant.hpp"
 #include <chrono>
-//#include <future>
-//#include "syncClient.hpp"
-//#include "syncServer.hpp"
+#include <thread>
+#include <algorithm>
 
 using namespace std;
 using namespace EuroScopePlugIn;
 
 const string MY_PLUGIN_NAME = "VCH";
-const string MY_PLUGIN_VERSION = "0.1.1";
+const string MY_PLUGIN_VERSION = "0.4.4";
 const string MY_PLUGIN_DEVELOPER = "Jan Fries";
 const string MY_PLUGIN_COPYRIGHT = "GPL v3";
 const string MY_PLUGIN_VIEW_AVISO = "Kleine Helferlein in Euroscope";
@@ -24,32 +25,38 @@ public:
 	CVCHPlugin();
 	virtual ~CVCHPlugin();
 
-	virtual void OnGetTagItem(CFlightPlan FlightPlan, CRadarTarget RadarTarget, int ItemCode, int TagData, char sItemString[16], int * pColorCode, COLORREF * pRGB, double * pFontSize);
+	virtual void OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, int ItemCode, int TagData, char sItemString[16], int * pColorCode, COLORREF * pRGB, double * pFontSize);
 
 	virtual void OnFunctionCall(int FunctionId, const char * sItemString, POINT Pt, RECT Area);
 
 	virtual void OnTimer(int Counter);
 
-	//future<void> syncServerThread;
-
-	//future<void> syncClientThread;
-
 	virtual void displayMessage(string message);
 
 	virtual void displayError(string message);
 
-	virtual int findSequence(vector<string> seqMe, CFlightPlan seqThis);
+	virtual void statusToVector(CFlightPlan flightPlan, bool add);
 
-	virtual void setupSyncServer();
+	virtual void setStatus(string status, CFlightPlan flightPlan);
 
-	virtual void setupSyncClient();
+	virtual string getStatus(CFlightPlan flightPlan);
 
-	virtual void setClearence(bool status, CFlightPlan flightPlan);
+	virtual COLORREF getTimeColour(int time);
 
-	virtual void setPushback(bool status, CFlightPlan flightPlan);
-	
-	virtual void setTaxi(bool status, CFlightPlan flightPlan);
+	virtual void delStatus(CFlightPlan flightPlan);
 
-	virtual void resetRequest(CFlightPlan flightPlan);
+	virtual void setSequence(vector<string> *thisVector, vector<int> *thisSeq);
+
+	virtual void setHoldShort(string holdShort, CFlightPlan flightPlan);
+
+	virtual void delHoldShort(CFlightPlan flightPlan);
+
+	virtual string getHoldShort(CFlightPlan flightPlan);
+
+	virtual void pushStrip(CFlightPlan flightPlan);
+
+	virtual void cleanVectors();
+
+	string getAirport();
 
 };

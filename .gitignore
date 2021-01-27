@@ -4,3 +4,4 @@ Release/VCH.tlog/unsuccessfulbuild
 *.log
 *.pdb
 *.obj
+Release/*
