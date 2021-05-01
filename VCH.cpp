@@ -23,3 +23,11 @@ void    __declspec (dllexport)    EuroScopePlugInExit(void)
 		// delete the instance
 		delete gpMyPlugin;
 }
+
+/*
+Changelog
+0.4.5: 
+- added option "noblink" so all requests and hold-shorts will not flash but appear in solid colours
+- added option "option" to either show or hide specific request types 
+
+*/

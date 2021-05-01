@@ -4,7 +4,8 @@
 
 clock_t timerOn;
 
-bool FLASH, sync = false;
+bool FLASH, sync, NOBLINK = false;
+bool NORC, NORS, NORP, NORT, NORD = false;
 
 vector<string> AircraftRequestingClearence;
 vector<int> AircraftClearenceSequence;
@@ -17,13 +18,7 @@ vector<int> AircraftDepartureSequence;
 vector<string> AircraftRequestingTaxi;
 vector<int> AircraftTaxiSequence;
 
-void CVCHPlugin::displayMessage(string message) {
-	DisplayUserMessage("Message", "VCH", message.c_str(), false, false, false, false, false);
-}
-
-void CVCHPlugin::displayError(string message) {
-	DisplayUserMessage("VCH", "Error", message.c_str(), true, true, false, true, false);
-}
+// Euroscope functions
 
 CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILITY_CODE, MY_PLUGIN_NAME.c_str(), MY_PLUGIN_VERSION.c_str(), MY_PLUGIN_DEVELOPER.c_str(), MY_PLUGIN_COPYRIGHT.c_str()) {
 
@@ -35,6 +30,45 @@ CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILI
 	RegisterTagItemFunction("Hold Short menu", TAG_FUNC_VCH_HMEN);
 
 	timerOn = clock();
+
+	const char* settingLoad;
+	if ((settingLoad = GetDataFromSettings("vch_blink")) != NULL) {
+		if (atoi(settingLoad) == false) {
+			NOBLINK = true;
+		}
+		else
+			NOBLINK = false;
+	} 
+	if ((settingLoad = GetDataFromSettings("vch_rc")) != NULL) {
+		if (atoi(settingLoad) == false)
+			NORC = true;
+		else
+			NORC = false;
+	}
+	if ((settingLoad = GetDataFromSettings("vch_rp")) != NULL) {
+		if (atoi(settingLoad) == false)
+			NORP = true;
+		else
+			NORP = false;
+	}
+	if ((settingLoad = GetDataFromSettings("vch_rs")) != NULL) {
+		if (atoi(settingLoad) == false)
+			NORS = true;
+		else
+			NORS = false;
+	}
+	if ((settingLoad = GetDataFromSettings("vch_rt")) != NULL) {
+		if (atoi(settingLoad) == false)
+			NORT = true;
+		else
+			NORT = false;
+	}
+	if ((settingLoad = GetDataFromSettings("vch_rd")) != NULL) {
+		if (atoi(settingLoad) == false)
+			NORD = true;
+		else
+			NORD = false;
+	}
 
 	DisplayUserMessage("Message", "VCH", string("Version " + MY_PLUGIN_VERSION + " loaded").c_str(), false, false, false, false, false);
 }
@@ -49,7 +83,7 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 			string status = "-";
 			if (findInSVector(&AircraftRequestingClearence, flightPlan.GetCallsign())) {
 				*pColorCode = TAG_COLOR_RGB_DEFINED;
-				if (FLASH)
+				if (FLASH || NOBLINK)
 					*pRGB = TAG_GREEN;
 				else
 					*pRGB = TAG_LIGHTGREEN;
@@ -58,7 +92,7 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 			}
 			else if (findInSVector(&AircraftRequestingPushback, flightPlan.GetCallsign())) {
 				*pColorCode = TAG_COLOR_RGB_DEFINED;
-				if (FLASH)
+				if (FLASH || NOBLINK)
 					*pRGB = TAG_YELLOW;
 				else
 					*pRGB = TAG_LIGHTYELLOW;
@@ -67,7 +101,7 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 			}
 			else if (findInSVector(&AircraftRequestingStartup, flightPlan.GetCallsign())) {
 				*pColorCode = TAG_COLOR_RGB_DEFINED;
-				if (FLASH)
+				if (FLASH || NOBLINK)
 					*pRGB = TAG_YELLOW;
 				else
 					*pRGB = TAG_LIGHTYELLOW;
@@ -76,7 +110,7 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 			}
 			else if (findInSVector(&AircraftRequestingTaxi, flightPlan.GetCallsign())) {
 				*pColorCode = TAG_COLOR_RGB_DEFINED;
-				if (FLASH)
+				if (FLASH || NOBLINK)
 					*pRGB = TAG_ORANGE;
 				else
 					*pRGB = TAG_LIGHTORANGE;
@@ -85,7 +119,7 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 			}
 			else if (findInSVector(&AircraftRequestingDeparture, flightPlan.GetCallsign())) {
 				*pColorCode = TAG_COLOR_RGB_DEFINED;
-				if (FLASH)
+				if (FLASH || NOBLINK)
 					*pRGB = TAG_RED;
 				else
 					*pRGB = TAG_LIGHTRED;
@@ -122,7 +156,7 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 		if (flightPlan.IsValid()) {
 			if (getHoldShort(flightPlan) != "") {
 				*pColorCode = TAG_COLOR_RGB_DEFINED;
-				if (FLASH)
+				if (FLASH || NOBLINK)
 					*pRGB = TAG_YELLOW;
 				else
 					*pRGB = TAG_LIGHTYELLOW;
@@ -175,11 +209,11 @@ void CVCHPlugin::OnFunctionCall(int FunctionId, const char * sItemString, POINT 
 {
 	if (FunctionId == TAG_FUNC_VCH_RMEN) {
 		OpenPopupList(Area, "Request menu", 1);
-		AddPopupListElement("Clearence", "", TAG_FUNC_VCH_CLEARENCE, false, POPUP_ELEMENT_NO_CHECKBOX, false);
-		AddPopupListElement("Pushback", "", TAG_FUNC_VCH_PUSHBACK, false, POPUP_ELEMENT_NO_CHECKBOX, false);
-		AddPopupListElement("Startup", "", TAG_FUNC_VCH_STARTUP, false, POPUP_ELEMENT_NO_CHECKBOX, false);
-		AddPopupListElement("Taxi", "", TAG_FUNC_VCH_TAXI, false, POPUP_ELEMENT_NO_CHECKBOX, false);
-		AddPopupListElement("Departure", "", TAG_FUNC_VCH_DEPARTURE, false, POPUP_ELEMENT_NO_CHECKBOX, false);
+		if (!NORC) AddPopupListElement("Clearence", "", TAG_FUNC_VCH_CLEARENCE, false, POPUP_ELEMENT_NO_CHECKBOX, false);
+		if (!NORP) AddPopupListElement("Pushback", "", TAG_FUNC_VCH_PUSHBACK, false, POPUP_ELEMENT_NO_CHECKBOX, false);
+		if (!NORS) AddPopupListElement("Startup", "", TAG_FUNC_VCH_STARTUP, false, POPUP_ELEMENT_NO_CHECKBOX, false);
+		if (!NORT) AddPopupListElement("Taxi", "", TAG_FUNC_VCH_TAXI, false, POPUP_ELEMENT_NO_CHECKBOX, false);
+		if (!NORD) AddPopupListElement("Departure", "", TAG_FUNC_VCH_DEPARTURE, false, POPUP_ELEMENT_NO_CHECKBOX, false);
 		AddPopupListElement("No request", "", TAG_FUNC_VCH_REQRESET, false, POPUP_ELEMENT_NO_CHECKBOX, false);
 	}
 
@@ -228,6 +262,102 @@ void CVCHPlugin::OnFunctionCall(int FunctionId, const char * sItemString, POINT 
 		delHoldShort(FlightPlanSelectASEL());
 	}
 }
+
+bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
+	if (startsWith(".vch blink", sCommandLine))	{
+		string buffer{ sCommandLine };
+		if (buffer.length() > 11) {
+			buffer.erase(0, 11);
+			if (buffer == "on") {
+				NOBLINK = false;
+			} else if (buffer == "off") {
+				NOBLINK = true;
+			} else {
+				displayError("Could not process parameter for .vch blink!");
+				return true;
+			}
+		} else {
+			NOBLINK = !NOBLINK;
+		}
+
+		if (!NOBLINK) {
+			SaveDataToSettings("vch_blink", "Blinking of requests or hold-shorts", "1");
+			displayMessage("Blinking switched on!");
+		} else {
+			SaveDataToSettings("vch_blink", "Blinking of requests or hold-shorts", "0");
+			displayMessage("Blinking switched off!");
+		}
+			
+		return true;
+	}
+	
+	if (startsWith(".vch option", sCommandLine)) {
+		string buffer{ sCommandLine };
+		buffer.erase(0, 12);
+		string setting{ buffer };
+		bool mod = false;
+		string mods{ "vch_" };
+		if (buffer.length() > 2) {
+			setting.erase(2, setting.length());
+			buffer.erase(0, 3);
+			if (buffer == "on") {
+				mod = false;
+			} else if (buffer == "off") {
+				mod = true;
+			} else {
+				displayError("Could not process parameter for .vch option!");
+				return true;
+			}		
+			mods += setting;
+		} else {
+			displayError("Could not process parameter for .vch option!");
+			return true;
+		}
+		string setMsg{ "Visibility of option: " + setting + " in request drop-down menu" };
+		if (setting == "rc")
+			NORC = mod;
+		if (setting == "rp")
+			NORP = mod;
+		if (setting == "rs")
+			NORS = mod;
+		if (setting == "rt")
+			NORT = mod;
+		if (setting == "rd")
+			NORD = mod;
+		if (!mod) {
+			SaveDataToSettings(mods.c_str(), setMsg.c_str(), "1");
+			displayMessage("Visibility of: " + setting + " switched on!");
+		}
+		else {
+			SaveDataToSettings(mods.c_str(), setMsg.c_str(), "0");
+			displayMessage("Visibility of: " + setting + " switched off!");
+		}
+		return true;
+	}
+	return false;
+}
+
+void CVCHPlugin::OnTimer(int Counter)
+{
+	sync = false;
+	FLASH = false;
+	if (((clock() - timerOn) / CLOCKS_PER_SEC) > 4) {
+		FLASH = true;
+		timerOn = clock();
+		sync = true;
+		cleanVectors();
+	}
+
+	setSequence(&AircraftRequestingClearence, &AircraftClearenceSequence);
+	setSequence(&AircraftRequestingPushback, &AircraftPushbackSequence);
+	setSequence(&AircraftRequestingStartup, &AircraftStartupSequence);
+	setSequence(&AircraftRequestingTaxi, &AircraftTaxiSequence);
+	setSequence(&AircraftRequestingDeparture, &AircraftDepartureSequence);
+}
+
+// Plugin functions
+
+// Request section
 
 void CVCHPlugin::statusToVector(CFlightPlan flightPlan, bool add) {
 	if (add) {
@@ -342,46 +472,6 @@ void CVCHPlugin::setSequence(vector<string>* thisVector, vector<int>* thisSeq) {
 	}
 }
 
-void CVCHPlugin::setHoldShort(string holdShort, CFlightPlan flightPlan) {
-	if (!flightPlan.GetFlightPlanData().IsAmended()) {
-		flightPlan.GetFlightPlanData().AmendFlightPlan();
-	}
-	if (holdShort.size() > 5) {
-		holdShort.resize(5);
-	}
-	holdShort = capStr(holdShort);
-	flightPlan.GetControllerAssignedData().SetFlightStripAnnotation(FSTRIP_ANNOTATION_HOS, holdShort.c_str());
-}
-
-void CVCHPlugin::delHoldShort(CFlightPlan flightPlan) {
-	if (!flightPlan.GetFlightPlanData().IsAmended()) {
-		flightPlan.GetFlightPlanData().AmendFlightPlan();
-	}
-	flightPlan.GetControllerAssignedData().SetFlightStripAnnotation(FSTRIP_ANNOTATION_HOS, "");
-}
-
-string CVCHPlugin::getHoldShort(CFlightPlan flightPlan) {
-	return flightPlan.GetControllerAssignedData().GetFlightStripAnnotation(FSTRIP_ANNOTATION_HOS);
-}
-
-void CVCHPlugin::pushStrip(CFlightPlan flightPlan) {
-	flightPlan.PushFlightStrip(ControllerMyself().GetPositionId());
-	vector<string> controllers;
-	string callsign, buffer = ControllerSelectFirst().GetCallsign();
-	buffer.resize(4);
-	if (buffer == getAirport()) {
-		controllers.push_back(callsign);
-	}
-	while (!findInSVector(&controllers, ControllerSelectNext(ControllerSelect(callsign.c_str())).GetCallsign())) {
-		callsign = ControllerSelectNext(ControllerSelect(callsign.c_str())).GetCallsign();
-		controllers.push_back(callsign);
-	}
-	for (string callsign : controllers) {
-		flightPlan.PushFlightStrip(ControllerSelect(callsign.c_str()).GetPositionId());
-	}
-	controllers.clear();
-}
-
 void CVCHPlugin::cleanVectors() {
 	for (string callsign : AircraftRequestingClearence) {
 		CFlightPlan flightPlan = FlightPlanSelect(callsign.c_str());
@@ -425,6 +515,58 @@ void CVCHPlugin::cleanVectors() {
 	}
 }
 
+// Hold-short section
+
+void CVCHPlugin::setHoldShort(string holdShort, CFlightPlan flightPlan) {
+	if (!flightPlan.GetFlightPlanData().IsAmended()) {
+		flightPlan.GetFlightPlanData().AmendFlightPlan();
+	}
+	if (holdShort.size() > 5) {
+		holdShort.resize(5);
+	}
+	holdShort = capStr(holdShort);
+	flightPlan.GetControllerAssignedData().SetFlightStripAnnotation(FSTRIP_ANNOTATION_HOS, holdShort.c_str());
+}
+
+void CVCHPlugin::delHoldShort(CFlightPlan flightPlan) {
+	if (!flightPlan.GetFlightPlanData().IsAmended()) {
+		flightPlan.GetFlightPlanData().AmendFlightPlan();
+	}
+	flightPlan.GetControllerAssignedData().SetFlightStripAnnotation(FSTRIP_ANNOTATION_HOS, "");
+}
+
+string CVCHPlugin::getHoldShort(CFlightPlan flightPlan) {
+	return flightPlan.GetControllerAssignedData().GetFlightStripAnnotation(FSTRIP_ANNOTATION_HOS);
+}
+
+// Common section
+
+void CVCHPlugin::displayMessage(string message) {
+	DisplayUserMessage("Message", "VCH", message.c_str(), false, false, false, false, false);
+}
+
+void CVCHPlugin::displayError(string message) {
+	DisplayUserMessage("VCH", "Error", message.c_str(), true, true, false, true, false);
+}
+
+void CVCHPlugin::pushStrip(CFlightPlan flightPlan) {
+	flightPlan.PushFlightStrip(ControllerMyself().GetPositionId());
+	vector<string> controllers;
+	string callsign, buffer = ControllerSelectFirst().GetCallsign();
+	buffer.resize(4);
+	if (buffer == getAirport()) {
+		controllers.push_back(callsign);
+	}
+	while (!findInSVector(&controllers, ControllerSelectNext(ControllerSelect(callsign.c_str())).GetCallsign())) {
+		callsign = ControllerSelectNext(ControllerSelect(callsign.c_str())).GetCallsign();
+		controllers.push_back(callsign);
+	}
+	for (string callsign : controllers) {
+		flightPlan.PushFlightStrip(ControllerSelect(callsign.c_str()).GetPositionId());
+	}
+	controllers.clear();
+}
+
 string CVCHPlugin::getAirport() {
 	string airport = ControllerMyself().GetCallsign();
 	if (ControllerMyself().IsController() && GetConnectionType() != CONNECTION_TYPE_NO) {
@@ -433,22 +575,4 @@ string CVCHPlugin::getAirport() {
 	} else {
 		return "XXXX";
 	}
-}
-
-void CVCHPlugin::OnTimer(int Counter)
-{
-	sync = false;
-	FLASH = false;
-	if (((clock() - timerOn) / CLOCKS_PER_SEC) > 4) {
-		FLASH = true;
-		timerOn = clock();
-		sync = true;
-		cleanVectors();
-	}
-	
-	setSequence(&AircraftRequestingClearence, &AircraftClearenceSequence);
-	setSequence(&AircraftRequestingPushback, &AircraftPushbackSequence);
-	setSequence(&AircraftRequestingStartup, &AircraftStartupSequence);
-	setSequence(&AircraftRequestingTaxi, &AircraftTaxiSequence);
-	setSequence(&AircraftRequestingDeparture, &AircraftDepartureSequence);
 }

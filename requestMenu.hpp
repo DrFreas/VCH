@@ -14,7 +14,7 @@ using namespace std;
 using namespace EuroScopePlugIn;
 
 const string MY_PLUGIN_NAME = "VCH";
-const string MY_PLUGIN_VERSION = "0.4.4";
+const string MY_PLUGIN_VERSION = "0.4.5";
 const string MY_PLUGIN_DEVELOPER = "Jan Fries";
 const string MY_PLUGIN_COPYRIGHT = "GPL v3";
 const string MY_PLUGIN_VIEW_AVISO = "Kleine Helferlein in Euroscope";
@@ -22,6 +22,8 @@ const string MY_PLUGIN_VIEW_AVISO = "Kleine Helferlein in Euroscope";
 class CVCHPlugin: public EuroScopePlugIn::CPlugIn
 {
 public:
+	// Euroscope functions
+
 	CVCHPlugin();
 	virtual ~CVCHPlugin();
 
@@ -29,11 +31,13 @@ public:
 
 	virtual void OnFunctionCall(int FunctionId, const char * sItemString, POINT Pt, RECT Area);
 
+	virtual bool OnCompileCommand(const char* sCommandLine);
+
 	virtual void OnTimer(int Counter);
 
-	virtual void displayMessage(string message);
+	// Plugin functions
 
-	virtual void displayError(string message);
+	// Request section
 
 	virtual void statusToVector(CFlightPlan flightPlan, bool add);
 
@@ -47,15 +51,23 @@ public:
 
 	virtual void setSequence(vector<string> *thisVector, vector<int> *thisSeq);
 
+	virtual void cleanVectors();
+
+	// Hold-short section
+
 	virtual void setHoldShort(string holdShort, CFlightPlan flightPlan);
 
 	virtual void delHoldShort(CFlightPlan flightPlan);
 
 	virtual string getHoldShort(CFlightPlan flightPlan);
 
-	virtual void pushStrip(CFlightPlan flightPlan);
+	// Common section
 
-	virtual void cleanVectors();
+	virtual void displayMessage(string message);
+
+	virtual void displayError(string message);
+
+	virtual void pushStrip(CFlightPlan flightPlan);
 
 	string getAirport();
 
