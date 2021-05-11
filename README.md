@@ -51,6 +51,7 @@ What you can customize (so far):
 -- rt -> Taxi
 -- rd -> Departure
 -- example: ".vch option rd off"
+
 Both settings get saved, if you confirm it in the saving dialog when closing Euroscope!
 
 Pictures:
