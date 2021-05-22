@@ -42,5 +42,19 @@ How to setup:
 - Align to center: checked
 - Left button: VCH / Hold Short menu
 
+What you can customize (so far):
+- command ".vch blink" or ".vch blink on" or ".vch blink off" to set blinking of the request /hold short item on or off (or toggle between those states).
+- command ".vch option" to set visibilities of individual items in the drop-down menu. 
+
+List of items:
+- rc -> Clearence
+- rp -> Pushback
+- rs -> Startup
+- rt -> Taxi
+- rd -> Departure
+- example: ".vch option rd off"
+
+Both settings get saved, if you confirm it in the saving dialog when closing Euroscope!
+
 Pictures:
 https://prnt.sc/xpuzho
