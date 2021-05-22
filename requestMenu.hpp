@@ -14,7 +14,7 @@ using namespace std;
 using namespace EuroScopePlugIn;
 
 const string MY_PLUGIN_NAME = "VCH";
-const string MY_PLUGIN_VERSION = "0.5.0";
+const string MY_PLUGIN_VERSION = "0.5.1";
 const string MY_PLUGIN_DEVELOPER = "Jan Fries";
 const string MY_PLUGIN_COPYRIGHT = "GPL v3";
 const string MY_PLUGIN_VIEW_AVISO = "Kleine Helferlein in Euroscope";

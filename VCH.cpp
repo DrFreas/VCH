@@ -26,6 +26,8 @@ void    __declspec (dllexport)    EuroScopePlugInExit(void)
 
 /*
 Changelog
+0.5.1:
+- changed option parameter for request items for consistency
 0.5.0:
 - added ability to change colors of tag items to user set colors
 - updated compatibility for "new" groundstates

@@ -40,31 +40,31 @@ CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILI
 		else
 			NOBLINK = false;
 	} 
-	if ((settingLoad = GetDataFromSettings("vch_rc")) != NULL) {
+	if ((settingLoad = GetDataFromSettings("vch_rqc")) != NULL) {
 		if (atoi(settingLoad) == false)
 			NORC = true;
 		else
 			NORC = false;
 	}
-	if ((settingLoad = GetDataFromSettings("vch_rp")) != NULL) {
+	if ((settingLoad = GetDataFromSettings("vch_rqp")) != NULL) {
 		if (atoi(settingLoad) == false)
 			NORP = true;
 		else
 			NORP = false;
 	}
-	if ((settingLoad = GetDataFromSettings("vch_rs")) != NULL) {
+	if ((settingLoad = GetDataFromSettings("vch_rqs")) != NULL) {
 		if (atoi(settingLoad) == false)
 			NORS = true;
 		else
 			NORS = false;
 	}
-	if ((settingLoad = GetDataFromSettings("vch_rt")) != NULL) {
+	if ((settingLoad = GetDataFromSettings("vch_rqt")) != NULL) {
 		if (atoi(settingLoad) == false)
 			NORT = true;
 		else
 			NORT = false;
 	}
-	if ((settingLoad = GetDataFromSettings("vch_rd")) != NULL) {
+	if ((settingLoad = GetDataFromSettings("vch_rqd")) != NULL) {
 		if (atoi(settingLoad) == false)
 			NORD = true;
 		else
@@ -354,15 +354,15 @@ bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
 			return true;
 		}
 		string setMsg{ "Visibility of option: " + setting + " in request drop-down menu" };
-		if (setting == "rc")
+		if (setting == "rqc")
 			NORC = mod;
-		if (setting == "rp")
+		if (setting == "rqp")
 			NORP = mod;
-		if (setting == "rs")
+		if (setting == "rqs")
 			NORS = mod;
-		if (setting == "rt")
+		if (setting == "rqt")
 			NORT = mod;
-		if (setting == "rd")
+		if (setting == "rqd")
 			NORD = mod;
 		if (!mod) {
 			SaveDataToSettings(mods.c_str(), setMsg.c_str(), "1");
