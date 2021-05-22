@@ -8,16 +8,20 @@
 #include <iomanip>
 
 const int TAG_ITEM_VCH_REQ = 540;
-const int TAG_ITEM_VCH_RQT = 541;
-const int TAG_FUNC_VCH_RMEN = 544;
+const int TAG_ITEM_VCH_RQC = 541;
+const int TAG_ITEM_VCH_RQP = 542;
+const int TAG_ITEM_VCH_RQS = 543;
+const int TAG_ITEM_VCH_RQT = 544;
+const int TAG_ITEM_VCH_RQD = 545;
+const int TAG_FUNC_VCH_RMEN = 548;
 
-const int TAG_FUNC_VCH_REQRESET = 545;
-const int TAG_FUNC_VCH_CLEARENCE = 546;
-const int TAG_FUNC_VCH_PUSHBACK = 547;
-const int TAG_FUNC_VCH_STARTUP = 548;
-const int TAG_FUNC_VCH_TAXI = 549;
-const int TAG_FUNC_VCH_DEPARTURE = 550;
-const int TAG_FUNC_VCH_SORT = 551;
+const int TAG_FUNC_VCH_REQRESET = 550;
+const int TAG_FUNC_VCH_CLEARENCE = 551;
+const int TAG_FUNC_VCH_PUSHBACK = 552;
+const int TAG_FUNC_VCH_STARTUP = 553;
+const int TAG_FUNC_VCH_TAXI = 554;
+const int TAG_FUNC_VCH_DEPARTURE = 555;
+const int TAG_FUNC_VCH_SORT = 556;
 
 const int TAG_ITEM_VCH_HOS = 440;
 const int TAG_FUNC_VCH_HMEN = 444;

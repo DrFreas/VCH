@@ -26,6 +26,11 @@ void    __declspec (dllexport)    EuroScopePlugInExit(void)
 
 /*
 Changelog
+0.5.0:
+- added ability to change colors of tag items to user set colors
+- updated compatibility for "new" groundstates
+0.4.6:
+- added command "release" which will release the aircraft specified in the command
 0.4.5: 
 - added option "noblink" so all requests and hold-shorts will not flash but appear in solid colours
 - added option "option" to either show or hide specific request types 

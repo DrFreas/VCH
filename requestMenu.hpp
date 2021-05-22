@@ -14,7 +14,7 @@ using namespace std;
 using namespace EuroScopePlugIn;
 
 const string MY_PLUGIN_NAME = "VCH";
-const string MY_PLUGIN_VERSION = "0.4.5";
+const string MY_PLUGIN_VERSION = "0.5.0";
 const string MY_PLUGIN_DEVELOPER = "Jan Fries";
 const string MY_PLUGIN_COPYRIGHT = "GPL v3";
 const string MY_PLUGIN_VIEW_AVISO = "Kleine Helferlein in Euroscope";
@@ -45,7 +45,9 @@ public:
 
 	virtual string getStatus(CFlightPlan flightPlan);
 
-	virtual COLORREF getTimeColour(int time);
+	virtual COLORREF getTimeColor(int time);
+
+	virtual COLORREF getTextColor(int tagItem);
 
 	virtual void delStatus(CFlightPlan flightPlan);
 

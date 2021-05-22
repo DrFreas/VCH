@@ -29,3 +29,5 @@ void removeFromVector(vector<string>* modString, vector<int>* modInt, string thi
 char charThis(string yesThis);
 
 time_t getTime();
+
+COLORREF stringToColor(string color);

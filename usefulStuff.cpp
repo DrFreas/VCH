@@ -93,3 +93,18 @@ char charThis(string yesThis) {
 time_t getTime() {
 	return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
+
+COLORREF stringToColor(string color) {
+	int rgb[3]{ 0, 0, 0 };
+	if (color.length() == 9) {
+		string buf = color;
+		for (int i = 0; i < 3; i++) {
+			buf.resize(3);
+			rgb[i] = stoi(buf);
+			color.erase(0, 3);
+			buf = color;
+		}
+	}
+	COLORREF colorCode = RGB(rgb[0], rgb[1], rgb[2]);
+	return colorCode;
+}
