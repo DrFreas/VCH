@@ -45,7 +45,7 @@ How to setup:
 What you can customize (so far):
 - command ".vch blink" or ".vch blink on" or ".vch blink off" to set blinking of the request /hold short item on or off (or toggle between those states).
 - command ".vch option" to set visibilities of individual items in the drop-down menu.
-- command ".vch color" to set the color of the individual tag items, color code needs to be in 9 digit rgb, example: .vch color rqc 255000000.
+- command ".vch color" to set the color of the individual tag items, color code needs to be in 9 digit rgb, example: .vch color rqc 255000000. 001001001 will set to Euroscope default, 002002002 will set back to default plugin settings.
 
 List of items:
 - rqc -> Clearence
