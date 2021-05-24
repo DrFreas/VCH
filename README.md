@@ -48,6 +48,7 @@ What you can customize (so far):
 - command ".vch color" to set the color of the individual tag items, color code needs to be in 9 digit rgb, example: .vch color rqc 255000000. 001001001 will set to Euroscope default, 002002002 will set back to default plugin settings.
 
 List of items:
+- hos -> Hold Short
 - rqc -> Clearence
 - rqp -> Pushback
 - rqs -> Startup
