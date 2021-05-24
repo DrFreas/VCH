@@ -4,14 +4,15 @@ Virtual Controller Helper
 This little plugin for Euroscope enables a "Pending Request" option for any list you like.
 With that you can mark the requests for individual flight plans, so you won't forget them!
 So far it has the following features:
-- Request Clearence (marked green)
-- Request Pushback (marked yellow)
-- Request Startup (marked yellow) - new in 0.4.4
-- Request Taxi (marked orange) - since 0.4.4, in older versions it is red
-- Request Departure (marked red) - new in 0.4.4
+- Request Clearence (marked green by default)
+- Request Pushback (marked yellow by default)
+- Request Startup (marked yellow by default) - new in 0.4.4
+- Request Taxi (marked orange by default) - since 0.4.4, in older versions it is red
+- Request Departure (marked red by default) - new in 0.4.4
 - No Request
 - Synchronization between multiple instances of Euroscope (beware that it will only synchronize correctly when all instances are open already, it won't do an automatic sync when an instance is opened after a request has been set (yet, at least it is unreliable)
 - Similar dropdown menu thing for "hold shorts" where you can enter up to 5 characters as a reminder out of the scratch pad
+- Since v0.5.0 it is possible to customize the colors of the tag items
 
 This is what it does on its own:
 - blinking in its respective color every 5 seconds (more or less)
