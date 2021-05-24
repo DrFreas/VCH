@@ -56,7 +56,7 @@ List of items:
 - rqd -> Departure
 - example: ".vch option rqd off"
 
-Both settings get saved, if you confirm it in the saving dialog when closing Euroscope!
+All settings get saved, if you confirm it in the saving dialog when closing Euroscope!
 
 Pictures:
 https://prnt.sc/xpuzho
