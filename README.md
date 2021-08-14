@@ -4,14 +4,15 @@ Virtual Controller Helper
 This little plugin for Euroscope enables a "Pending Request" option for any list you like.
 With that you can mark the requests for individual flight plans, so you won't forget them!
 So far it has the following features:
-- Request Clearence (marked green)
-- Request Pushback (marked yellow)
-- Request Startup (marked yellow) - new in 0.4.4
-- Request Taxi (marked orange) - since 0.4.4, in older versions it is red
-- Request Departure (marked red) - new in 0.4.4
+- Request Clearence (marked green by default)
+- Request Pushback (marked yellow by default)
+- Request Startup (marked yellow by default) - new in 0.4.4
+- Request Taxi (marked orange by default) - since 0.4.4, in older versions it is red
+- Request Departure (marked red by default) - new in 0.4.4
 - No Request
 - Synchronization between multiple instances of Euroscope (beware that it will only synchronize correctly when all instances are open already, it won't do an automatic sync when an instance is opened after a request has been set (yet, at least it is unreliable)
 - Similar dropdown menu thing for "hold shorts" where you can enter up to 5 characters as a reminder out of the scratch pad
+- Since v0.5.0 it is possible to customize the colors of the tag items
 
 This is what it does on its own:
 - blinking in its respective color every 5 seconds (more or less)
@@ -44,10 +45,11 @@ How to setup:
 
 What you can customize (so far):
 - command ".vch blink" or ".vch blink on" or ".vch blink off" to set blinking of the request /hold short item on or off (or toggle between those states).
-- command ".vch option" to set visibilities of individual items in the drop-down menu.
+- command ".vch option" to set visibilities of individual items in the drop-down menu. Example: .vch option rqd off
 - command ".vch color" to set the color of the individual tag items, color code needs to be in 9 digit rgb, example: .vch color rqc 255000000. 001001001 will set to Euroscope default, 002002002 will set back to default plugin settings.
 
 List of items:
+- hos -> Hold Short
 - rqc -> Clearence
 - rqp -> Pushback
 - rqs -> Startup
@@ -55,7 +57,7 @@ List of items:
 - rqd -> Departure
 - example: ".vch option rqd off"
 
-Both settings get saved, if you confirm it in the saving dialog when closing Euroscope!
+All settings get saved, if you confirm it in the saving dialog when closing Euroscope!
 
 Pictures:
 https://prnt.sc/xpuzho
