@@ -26,6 +26,10 @@ void    __declspec (dllexport)    EuroScopePlugInExit(void)
 
 /*
 Changelog
+0.6.1:
+- added "cleared to land" function
+0.6.0:
+- added online version checking
 0.5.1:
 - changed option parameter for request items for consistency
 0.5.0:

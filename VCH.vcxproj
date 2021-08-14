@@ -38,7 +38,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -140,7 +140,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(ProjectDir)\Libs\EuroScopePlugInDll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)\Libs\EuroScopePlugInDll.lib;Wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
@@ -165,6 +165,7 @@
   <ItemGroup>
     <ClInclude Include="Config.h" />
     <ClInclude Include="Constant.hpp" />
+    <ClInclude Include="internet.hpp" />
     <ClInclude Include="requestMenu.hpp">
       <DeploymentContent>false</DeploymentContent>
     </ClInclude>
@@ -173,6 +174,7 @@
     <ClInclude Include="usefulStuff.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="internet.cpp" />
     <ClCompile Include="usefulStuff.cpp" />
     <ClCompile Include="VCH.cpp" />
     <ClCompile Include="requestMenu.cpp">

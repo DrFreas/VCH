@@ -9,12 +9,13 @@
 #include <chrono>
 #include <thread>
 #include <algorithm>
+#include "internet.hpp"
 
 using namespace std;
 using namespace EuroScopePlugIn;
 
 const string MY_PLUGIN_NAME = "VCH";
-const string MY_PLUGIN_VERSION = "0.5.1";
+const string MY_PLUGIN_VERSION = "0.6.1";
 const string MY_PLUGIN_DEVELOPER = "Jan Fries";
 const string MY_PLUGIN_COPYRIGHT = "GPL v3";
 const string MY_PLUGIN_VIEW_AVISO = "Kleine Helferlein in Euroscope";
@@ -63,13 +64,27 @@ public:
 
 	virtual string getHoldShort(CFlightPlan flightPlan);
 
+	// Cleared-to-land section
+
+	virtual void setClearedToLand(CFlightPlan flightPlan);
+
+	virtual void delClearedToLand(CFlightPlan flightPlan);
+
+	virtual string getClearedToLand(CFlightPlan flightPlan);
+
 	// Common section
+
+	virtual void versionCheck();
 
 	virtual void displayMessage(string message);
 
 	virtual void displayError(string message);
 
 	virtual void pushStrip(CFlightPlan flightPlan);
+
+	virtual bool isLanding(double distance);
+
+	//virtual int getAltitudeAboveAirport(CFlightPlan flightPlan);
 
 	string getAirport();
 

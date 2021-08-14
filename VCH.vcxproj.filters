@@ -33,6 +33,9 @@
     <ClInclude Include="usefulStuff.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="internet.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="requestMenu.cpp">
@@ -42,6 +45,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="usefulStuff.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="internet.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

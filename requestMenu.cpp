@@ -6,7 +6,8 @@ clock_t timerOn;
 
 bool FLASH, sync, NOBLINK = false;
 bool NORC, NORS, NORP, NORT, NORD = false;
-COLORREF colorHOS{ TAG_YELLOW }, colorRQC{ TAG_GREEN }, colorRQP{ TAG_YELLOW }, colorRQS{ TAG_YELLOW }, colorRQT{ TAG_ORANGE }, colorRQD{ TAG_RED };
+COLORREF colorHOS{ TAG_YELLOW }, colorRQC{ TAG_GREEN }, colorRQP{ TAG_YELLOW }, colorRQS{ TAG_YELLOW }, colorRQT{ TAG_ORANGE }, colorRQD{ TAG_RED }, colorNCTL{ TAG_RED }, colorCTL{ TAG_GREEN };
+double distanceCTL = 40;
 
 vector<string> AircraftRequestingClearence;
 vector<int> AircraftClearenceSequence;
@@ -19,6 +20,8 @@ vector<int> AircraftDepartureSequence;
 vector<string> AircraftRequestingTaxi;
 vector<int> AircraftTaxiSequence;
 
+internetConnection interNet(MY_PLUGIN_VERSION);
+
 // Euroscope functions
 
 CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILITY_CODE, MY_PLUGIN_NAME.c_str(), MY_PLUGIN_VERSION.c_str(), MY_PLUGIN_DEVELOPER.c_str(), MY_PLUGIN_COPYRIGHT.c_str()) {
@@ -29,6 +32,9 @@ CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILI
 
 	RegisterTagItemType("Active Hold Short", TAG_ITEM_VCH_HOS);
 	RegisterTagItemFunction("Hold Short menu", TAG_FUNC_VCH_HMEN);
+
+	RegisterTagItemType("Pending Landing Clearence", TAG_ITEM_VCH_CTL);
+	RegisterTagItemFunction("Switch Landing Clearence", TAG_FUNC_VCH_CTL);
 
 	timerOn = clock();
 
@@ -70,6 +76,10 @@ CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILI
 		else
 			NORD = false;
 	}
+	if ((settingLoad = GetDataFromSettings("vch_ctl")) != NULL) {
+		if (atof(settingLoad) != 0)
+			distanceCTL = atof(settingLoad);
+	}
 	if ((settingLoad = GetDataFromSettings("vch_c_hos")) != NULL) {
 		colorHOS = stringToColor(settingLoad);
 		if (colorHOS == RGB(2, 2, 2)) {
@@ -106,8 +116,22 @@ CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILI
 			colorRQD = TAG_RED;
 		}
 	}
-
+	if ((settingLoad = GetDataFromSettings("vch_c_ctl")) != NULL) {
+		colorCTL = stringToColor(settingLoad);
+		if (colorCTL == RGB(2, 2, 2)) {
+			colorCTL = TAG_GREEN;
+		}
+	}
+	if ((settingLoad = GetDataFromSettings("vch_c_nlc")) != NULL) {
+		colorNCTL = stringToColor(settingLoad);
+		if (colorNCTL == RGB(2, 2, 2)) {
+			colorNCTL = TAG_RED;
+		}
+	}
+	thread sendInternet(&CVCHPlugin::versionCheck, this);
+	sendInternet.detach();
 	DisplayUserMessage("Message", "VCH", string("Version " + MY_PLUGIN_VERSION + " loaded").c_str(), false, false, false, false, false);
+
 }
 
 CVCHPlugin::~CVCHPlugin()
@@ -210,6 +234,29 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 		}
 	}
 
+	if (ItemCode == TAG_ITEM_VCH_CTL) {
+		if (flightPlan.IsValid() && isLanding(flightPlan.GetDistanceToDestination()) && RadarTarget.GetGS() > 30 && flightPlan.GetTrackingControllerIsMe()) {
+			
+			if (getClearedToLand(flightPlan) == "") {	
+				if (colorNCTL != RGB(1, 1, 1)) {
+					*pColorCode = TAG_COLOR_RGB_DEFINED;
+					*pRGB = getTextColor(TAG_ITEM_VCH_CTL);
+				} else {
+					*pColorCode = TAG_COLOR_DEFAULT;
+				}				
+			} else {
+				if (colorCTL != RGB(1, 1, 1)) {
+					*pColorCode = TAG_COLOR_RGB_DEFINED;
+					*pRGB = colorCTL;
+				} else {
+					*pColorCode = TAG_COLOR_DEFAULT;
+				}
+			}
+
+			strcpy_s(sItemString, 16, "CTL");
+		}
+	}
+
 	// automatically disabling requests depending on the ground state and sorting the requests
 	if (flightPlan.IsValid()) {
 		if (flightPlan.GetClearenceFlag() && findInSVector(&AircraftRequestingClearence, flightPlan.GetCallsign())) {
@@ -240,9 +287,6 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 		statusToVector(flightPlan, false);
 	}
 
-	/*if (sync && flightPlan.IsValid() && flightPlan.GetTrackingControllerIsMe()) {
-		pushStrip(flightPlan);
-	}*/
 }
 
 void CVCHPlugin::OnFunctionCall(int FunctionId, const char * sItemString, POINT Pt, RECT Area)
@@ -301,6 +345,14 @@ void CVCHPlugin::OnFunctionCall(int FunctionId, const char * sItemString, POINT 
 	if (FunctionId == TAG_FUNC_VCH_HOSRESET) {
 		delHoldShort(FlightPlanSelectASEL());
 	}
+
+	if (FunctionId == TAG_FUNC_VCH_CTL) {
+		if (getClearedToLand(FlightPlanSelectASEL()) == "") {
+			setClearedToLand(FlightPlanSelectASEL());
+		} else {
+			delClearedToLand(FlightPlanSelectASEL());
+		}
+	}
 }
 
 bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
@@ -338,8 +390,8 @@ bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
 		bool mod = false;
 		string mods{ "vch_" };
 		if (buffer.length() > 2) {
-			setting.erase(2, setting.length());
-			buffer.erase(0, 3);
+			setting.erase(3, setting.length());
+			buffer.erase(0, 4);
 			if (buffer == "on") {
 				mod = false;
 			} else if (buffer == "off") {
@@ -353,6 +405,7 @@ bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
 			displayError("Could not process parameter for .vch option!");
 			return true;
 		}
+		// To fix: invalid options which are not recognized change settings which don't do anything
 		string setMsg{ "Visibility of option: " + setting + " in request drop-down menu" };
 		if (setting == "rqc")
 			NORC = mod;
@@ -444,13 +497,34 @@ bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
 					colorRQD = TAG_RED;
 				}
 				SaveDataToSettings("vch_c_rqd", "Color of tag item: Request Departure", colorCode.c_str());
-			} else {
+			} else if (buffer == "ctl") {
+				colorCTL = stringToColor(colorCode);
+				if (colorCTL == RGB(2, 2, 2)) {
+					colorCTL = TAG_GREEN;
+				}
+				SaveDataToSettings("vch_c_ctl", "Color of tag item: Cleared to Land", colorCode.c_str());
+			} else if (buffer == "nlc") {
+				colorNCTL = stringToColor(colorCode);
+				if (colorNCTL == RGB(2, 2, 2)) {
+					colorNCTL = TAG_RED;
+				}
+				SaveDataToSettings("vch_c_nlc", "Color of tag item: Not Cleared to Land", colorCode.c_str());
+			}
+			else {
 				displayError("Parameter for .vch color invalid!");
 			}
 		}
 		else {
 			displayError("Invalid format for: .vch color!");
 		}
+		return true;
+	}
+
+	if (startsWith(".vch distance", sCommandLine)) {
+		string buffer{ sCommandLine };
+		buffer.erase(0, 14);
+		distanceCTL = stod(buffer);
+		SaveDataToSettings("vch_ctl", "Trigger distance of CTL flag", to_string(distanceCTL).c_str());
 		return true;
 	}
 
@@ -542,6 +616,7 @@ string CVCHPlugin::getStatus(CFlightPlan flightPlan) {
 }
 
 // Finds out, what colour a specific time is
+
 COLORREF CVCHPlugin::getTimeColor(int time) {
 	if (time == NULL) {
 		return TAG_GREY;
@@ -569,6 +644,7 @@ COLORREF CVCHPlugin::getTextColor(int tagItem) {
 		case TAG_ITEM_VCH_RQS: colorRef = colorRQS; break;
 		case TAG_ITEM_VCH_RQT: colorRef = colorRQT; break;
 		case TAG_ITEM_VCH_RQD: colorRef = colorRQD; break;
+		case TAG_ITEM_VCH_CTL: colorRef = colorNCTL; break;
 		default: break;
 	}
 	if (FLASH || NOBLINK) {
@@ -687,6 +763,26 @@ string CVCHPlugin::getHoldShort(CFlightPlan flightPlan) {
 	return flightPlan.GetControllerAssignedData().GetFlightStripAnnotation(FSTRIP_ANNOTATION_HOS);
 }
 
+// Cleared-to-land section
+
+void CVCHPlugin::setClearedToLand(CFlightPlan flightPlan) {
+	if (!flightPlan.GetFlightPlanData().IsAmended()) {
+		flightPlan.GetFlightPlanData().AmendFlightPlan();
+	}
+	flightPlan.GetControllerAssignedData().SetFlightStripAnnotation(FSTRIP_ANNOTATION_CTL, "CTL");
+}
+
+void CVCHPlugin::delClearedToLand(CFlightPlan flightPlan) {
+	if (!flightPlan.GetFlightPlanData().IsAmended()) {
+		flightPlan.GetFlightPlanData().AmendFlightPlan();
+	}
+	flightPlan.GetControllerAssignedData().SetFlightStripAnnotation(FSTRIP_ANNOTATION_CTL, "");
+}
+
+string CVCHPlugin::getClearedToLand(CFlightPlan flightPlan) {
+	return flightPlan.GetControllerAssignedData().GetFlightStripAnnotation(FSTRIP_ANNOTATION_CTL);
+}
+
 // Common section
 
 void CVCHPlugin::displayMessage(string message) {
@@ -715,6 +811,20 @@ void CVCHPlugin::pushStrip(CFlightPlan flightPlan) {
 	controllers.clear();
 }
 
+bool CVCHPlugin::isLanding(double distance) {
+	if (distance <= distanceCTL)
+		return true;
+	else
+		return false;
+}
+
+/*
+To be figured out how to get airport elevation data without providing extra data 
+int CVCHPlugin::getAltitudeAboveAirport(CFlightPlan flightPlan) {
+	string airport = flightPlan.GetFlightPlanData().GetDestination();
+
+}*/
+
 string CVCHPlugin::getAirport() {
 	string airport = ControllerMyself().GetCallsign();
 	if (ControllerMyself().IsController() && GetConnectionType() != CONNECTION_TYPE_NO) {
@@ -722,5 +832,29 @@ string CVCHPlugin::getAirport() {
 		return airport;
 	} else {
 		return "XXXX";
+	}
+}
+
+void CVCHPlugin::versionCheck() {
+	displayMessage("Checking VCH version...");
+	string answer = interNet.getData();
+	if (interNet.hasError) {
+		displayError("Version checking Error: " + answer);
+		return;
+	}
+	if (answer.find_first_of("ERROR") == 0) {
+		displayError("ERROR DATA: " + answer);
+		return;
+	}
+	if (answer == MY_PLUGIN_VERSION) {
+		displayMessage("VCH is up to date!");
+	}
+	else {
+		string versionMsg = "New VCH version available: ";
+		versionMsg += answer;
+		versionMsg += ". Your version is: ";
+		versionMsg += MY_PLUGIN_VERSION;
+		versionMsg += ".";
+		displayError(versionMsg);
 	}
 }
