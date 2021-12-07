@@ -15,6 +15,7 @@ So far it has the following features:
 - Since v0.5.0 it is possible to customize the colors of the tag items
 - Since v0.6.0 there is an online version checking, if the version is outdated it will let you know!
 - Also since v.0.6.1 there is a "CTL" flag (cleared to land) which gets shown for arriving traffic as a reminder to give a landing clearence
+- since v0.6.2 you can switch off the requirement to track the aircraft to switch the flag.
 
 This is what it does on its own:
 - blinking in its respective color every 5 seconds (more or less)
