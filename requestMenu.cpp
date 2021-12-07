@@ -4,7 +4,7 @@
 
 clock_t timerOn;
 
-bool FLASH, sync, NOBLINK = false;
+bool FLASH, sync, NOBLINK, NOCTLT = false;
 bool NORC, NORS, NORP, NORT, NORD = false;
 COLORREF colorHOS{ TAG_YELLOW }, colorRQC{ TAG_GREEN }, colorRQP{ TAG_YELLOW }, colorRQS{ TAG_YELLOW }, colorRQT{ TAG_ORANGE }, colorRQD{ TAG_RED }, colorNCTL{ TAG_RED }, colorCTL{ TAG_GREEN };
 double distanceCTL = 40;
@@ -128,6 +128,10 @@ CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILI
 			colorNCTL = TAG_RED;
 		}
 	}
+	if ((settingLoad = GetDataFromSettings("vch_ctl_t")) != NULL) {
+		if (atof(settingLoad) != 0)
+			NOCTLT = atof(settingLoad);
+	}
 	thread sendInternet(&CVCHPlugin::versionCheck, this);
 	sendInternet.detach();
 	DisplayUserMessage("Message", "VCH", string("Version " + MY_PLUGIN_VERSION + " loaded").c_str(), false, false, false, false, false);
@@ -235,7 +239,7 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 	}
 
 	if (ItemCode == TAG_ITEM_VCH_CTL) {
-		if (flightPlan.IsValid() && isLanding(flightPlan.GetDistanceToDestination()) && RadarTarget.GetGS() > 30 && flightPlan.GetTrackingControllerIsMe()) {
+		if (flightPlan.IsValid() && isLanding(flightPlan.GetDistanceToDestination()) && RadarTarget.GetGS() > 30 && getTracking(flightPlan.GetTrackingControllerIsMe())) {
 			
 			if (getClearedToLand(flightPlan) == "") {	
 				if (colorNCTL != RGB(1, 1, 1)) {
@@ -525,6 +529,14 @@ bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
 		buffer.erase(0, 14);
 		distanceCTL = stod(buffer);
 		SaveDataToSettings("vch_ctl", "Trigger distance of CTL flag", to_string(distanceCTL).c_str());
+		return true;
+	}
+
+	if (startsWith(".vch ctltrack", sCommandLine)) {
+		string buffer{ sCommandLine };
+		NOCTLT = !NOCTLT;
+		SaveDataToSettings("vch_ctl_t", "Tracking requirement for CTL flag", to_string(NOCTLT).c_str());
+		displayMessage("Tracking requirement for CTL flag set to: " + to_string(NOCTLT));
 		return true;
 	}
 
@@ -832,6 +844,14 @@ string CVCHPlugin::getAirport() {
 		return airport;
 	} else {
 		return "XXXX";
+	}
+}
+
+bool CVCHPlugin::getTracking(bool tracking) {
+	if (NOCTLT) {
+		return true;
+	} else {
+		return tracking;
 	}
 }
 

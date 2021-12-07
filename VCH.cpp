@@ -26,6 +26,8 @@ void    __declspec (dllexport)    EuroScopePlugInExit(void)
 
 /*
 Changelog
+0.6.2:
+- added option to disable tracking requirement for CTL to show
 0.6.1:
 - added "cleared to land" function
 0.6.0:

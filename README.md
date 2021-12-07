@@ -13,6 +13,8 @@ So far it has the following features:
 - Synchronization between multiple instances of Euroscope (beware that it will only synchronize correctly when all instances are open already, it won't do an automatic sync when an instance is opened after a request has been set (yet, at least it is unreliable)
 - Similar dropdown menu thing for "hold shorts" where you can enter up to 5 characters as a reminder out of the scratch pad
 - Since v0.5.0 it is possible to customize the colors of the tag items
+- Since v0.6.0 there is an online version checking, if the version is outdated it will let you know!
+- Also since v.0.6.1 there is a "CTL" flag (cleared to land) which gets shown for arriving traffic as a reminder to give a landing clearence
 
 This is what it does on its own:
 - blinking in its respective color every 5 seconds (more or less)
@@ -42,11 +44,18 @@ How to setup:
 - Width: 5
 - Align to center: checked
 - Left button: VCH / Hold Short menu
+- for the CTL item:
+- Tag Item type: VCH / Pending Landing Clearence
+- Header name: CTL
+- Width: 3
+- Align to center: checked
+- Left button: VCH / Switch Landing Clearence
 
 What you can customize (so far):
 - command ".vch blink" or ".vch blink on" or ".vch blink off" to set blinking of the request /hold short item on or off (or toggle between those states).
 - command ".vch option" to set visibilities of individual items in the drop-down menu. Example: .vch option rqd off
 - command ".vch color" to set the color of the individual tag items, color code needs to be in 9 digit rgb, example: .vch color rqc 255000000. 001001001 will set to Euroscope default, 002002002 will set back to default plugin settings.
+- command ".vch distance" will set the distance to the destination in nm of an aircraft to show the CTL tag. Exmaple: .vch distance 20. Default is 40nm.
 
 List of items:
 - hos -> Hold Short
@@ -55,6 +64,8 @@ List of items:
 - rqs -> Startup
 - rqt -> Taxi
 - rqd -> Departure
+- ctl -> Cleared to Land
+- nlc -> Not Cleared to Land
 - example: ".vch option rqd off"
 
 All settings get saved, if you confirm it in the saving dialog when closing Euroscope!

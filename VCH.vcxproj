@@ -23,7 +23,7 @@
     <ProjectGuid>{7D54F49E-9592-4FAC-9E2E-366CBA99FDC6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>VCH</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>VCH</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
