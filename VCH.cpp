@@ -26,6 +26,17 @@ void    __declspec (dllexport)    EuroScopePlugInExit(void)
 
 /*
 Changelog
+0.8.1:
+- added "reminder" flag for whatever use. Manual trigger only and not synced with anyone (except it is active, you are tracking and handing off a tag)!
+0.8.0:
+- added syncing with other stations (finally), now FlightStripAnnotations are ditched, everything is in remarks now
+0.7.1:
+- added "CTL" flag which only showws when CTL is active
+- added "CFT" flag which only shows when an aircraft has ground state "DEPA" and is within 1nm of it's origin
+0.7.0:
+- Rewritten the way requests are stored in the plugin from scratch, making live a lot easier and completely ditching vectors
+0.6.3:
+- fixed a bug where the sequence vectors would not clean up non-valid callsigns
 0.6.2:
 - added option to disable tracking requirement for CTL to show
 0.6.1:

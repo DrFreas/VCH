@@ -31,17 +31,17 @@ const int TAG_FUNC_VCH_HOSTEXT = 446;
 const int TAG_FUNC_VCH_HOSRESET = 447;
 
 const int TAG_ITEM_VCH_CTL = 640;
+const int TAG_ITEM_VCH_SCL = 641;
+const int TAG_ITEM_VCH_CFT = 642;
 const int TAG_FUNC_VCH_CTL = 650;
+
+const int TAG_ITEM_VCH_REM = 340;
+const int TAG_ITEM_VCH_SRM = 340;
+const int TAG_FUNC_VCH_REM = 346;
 
 const int SYNC_REQUEST = 100;
 
-const int SYNC_NO = 0;
-const int SYNC_SERVER = 1;
-const int SYNC_CLIENT = 2;
-
-const int FSTRIP_ANNOTATION_HOS = 5;
-const int FSTRIP_ANNOTATION_CTL = 7;
-const int FSTRIP_ANNOTATION_REQ = 8;
+const int TAG_STRIP_ANNO_REM = 8;
 
 const COLORREF TAG_LIGHTGREEN = RGB(130, 190, 130);
 const COLORREF TAG_LIGHTYELLOW = RGB(190, 190, 130);
