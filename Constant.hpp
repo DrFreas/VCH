@@ -39,6 +39,8 @@ const int TAG_ITEM_VCH_REM = 340;
 const int TAG_ITEM_VCH_SRM = 340;
 const int TAG_FUNC_VCH_REM = 346;
 
+const int TAG_ITEM_SID_HINT = 700;
+
 const int SYNC_REQUEST = 100;
 
 const int TAG_STRIP_ANNO_REM = 8;

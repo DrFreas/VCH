@@ -2,6 +2,7 @@
 #include "EuroScopePlugIn.h"
 #include "usefulStuff.hpp"
 #include <iostream>
+#include <fstream>
 #include <map>
 #include "Constant.hpp"
 #include <thread>

@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "requestMenu.hpp"
 
+extern "C" IMAGE_DOS_HEADER __ImageBase;
+
+//ifstream sidfile;
+char DllPathFile[_MAX_PATH];
+string sid_file_path;
 
 clock_t timerOn;
 
@@ -15,6 +20,8 @@ string lastError = "";
 //int rtimeout = 600;
 
 map<string, requestBox> request;  // type, time, lastSeen
+
+map<string, map<string, string>> sids;
 
 internetConnection interNet(MY_PLUGIN_VERSION);
 
@@ -37,6 +44,8 @@ CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILI
 	RegisterTagItemType("Reminder", TAG_ITEM_VCH_REM);
 	RegisterTagItemType("Reminder only when active", TAG_ITEM_VCH_SRM);
 	RegisterTagItemFunction("Switch Reminder", TAG_FUNC_VCH_REM);
+
+	RegisterTagItemType("SID Hint", TAG_ITEM_SID_HINT);
 
 	timerOn = clock();
 
@@ -168,10 +177,41 @@ CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILI
 		if (atof(settingLoad) != 0)
 			NOCTLT = atof(settingLoad);
 	}
+	
 	thread sendInternet(&CVCHPlugin::versionCheck, this);
 	sendInternet.detach();
 	DisplayUserMessage("Message", "VCH", string("Version " + MY_PLUGIN_VERSION + " loaded").c_str(), false, false, false, false, false);
 
+	GetModuleFileNameA(HINSTANCE(&__ImageBase), DllPathFile, sizeof(DllPathFile));
+	sid_file_path = DllPathFile;
+	sid_file_path.resize(sid_file_path.size() - strlen("VCH.dll"));
+	sid_file_path += "sid_hint.txt";
+
+	try {
+		stringstream ss;
+		ifstream ifs;
+		ifs.open(sid_file_path.c_str(), ios::binary);
+		ss << ifs.rdbuf();
+		ifs.close();
+
+		string line;
+
+		while (std::getline(ss, line)) {
+
+			stringstream linestream(line);
+
+			string aerodrome;
+			string procedure;
+			string text;
+
+			std::getline(linestream, aerodrome, ';');
+			std::getline(linestream, procedure, ';');
+			std::getline(linestream, text);
+
+			sids[aerodrome].insert(make_pair(procedure, text));
+		}
+	}
+	catch (exception exc) {}
 }
 
 CVCHPlugin::~CVCHPlugin()
@@ -361,6 +401,15 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 				strcpy_s(sItemString, 16, reminderSymbol.c_str());
 			}
 
+		}
+	}
+
+	if (ItemCode == TAG_ITEM_SID_HINT) {
+		if (flightPlan.IsValid()) {
+			string adep = flightPlan.GetFlightPlanData().GetOrigin();
+			string sid = flightPlan.GetFlightPlanData().GetSidName();
+
+			strcpy_s(sItemString, sizeof sItemString, sids[adep][sid].c_str());
 		}
 	}
 
