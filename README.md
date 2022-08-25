@@ -6,9 +6,9 @@ With that you can mark the requests for individual flight plans, so you won't fo
 So far it has the following features:
 - Request Clearence (marked green by default)
 - Request Pushback (marked yellow by default)
-- Request Startup (marked yellow by default) - new in 0.4.4
-- Request Taxi (marked orange by default) - since 0.4.4, in older versions it is red
-- Request Departure (marked red by default) - new in 0.4.4
+- Request Startup (marked yellow by default) - new in v0.4.4
+- Request Taxi (marked orange by default) - since v0.4.4, in older versions it is red
+- Request Departure (marked red by default) - new in v0.4.4
 - No Request
 - Synchronization between multiple instances of Euroscope (beware that it will only synchronize correctly when all instances are open already, it won't do an automatic sync when an instance is opened after a request has been set (yet, at least it is unreliable)
 - Similar dropdown menu thing for "hold shorts" where you can enter up to 5 characters as a reminder out of the scratch pad
@@ -16,6 +16,10 @@ So far it has the following features:
 - Since v0.6.0 there is an online version checking, if the version is outdated it will let you know!
 - Also since v.0.6.1 there is a "CTL" flag (cleared to land) which gets shown for arriving traffic as a reminder to give a landing clearence
 - since v0.6.2 you can switch off the requirement to track the aircraft to switch the flag.
+- since v0.8.1 there is a "CTL" flag which is only shown when it is active
+- since v0.8.1 there is a "CFT" flag which shows if the ground state is "DEPA" and within 2nm within the origin (can be changed)
+- since v0.8.1 there is a "reminder" item which switches states on command and can show two different things (not synced with anyone except yourself)
+- since v0.8.1 there is also a "reminder" item which only shows up if the reminder is active
 
 This is what it does on its own:
 - blinking in its respective color every 5 seconds (more or less)
@@ -54,10 +58,13 @@ How to setup:
 
 What you can customize (so far):
 - command ".vch blink" or ".vch blink on" or ".vch blink off" to set blinking of the request /hold short item on or off (or toggle between those states).
-- command ".vch option" to set visibilities of individual items in the drop-down menu. Example: .vch option rqd off
-- command ".vch color" to set the color of the individual tag items, color code needs to be in 9 digit rgb, example: .vch color rqc 255000000. 001001001 will set to Euroscope default, 002002002 will set back to default plugin settings.
-- command ".vch distance" will set the distance to the destination in nm of an aircraft to show the CTL tag. Exmaple: .vch distance 20. Default is 40nm.
+- command ".vch option" to set visibilities of individual items in the drop-down menu. Example: ".vch option rqd off"
+- command ".vch color" to set the color of the individual tag items, color code needs to be in 9 digit rgb, example: ".vch color rqc 255000000". 001001001 will set to Euroscope default, 002002002 will set back to default plugin settings.
+- command ".vch ctldist" will set the distance to the destination in nm of an aircraft to show the CTL tag. Example: ".vch ctldist 20". Default is 40nm. (former: .vch distance
+- command ".vch cftdist" will set the distance from the origin in nm of an aircraft to show the CFT tag. Example: ".vch ctfdist 10". Default is 2.
 - command ".vch ctltrack" will switch between surpressing the tracking requirement of the CTL flag or not. So if set to "1", you won't have to track the aircraft to change the CTL flag.
+- command ".vch reminderon" will set the text for the reminder tag item if it is active. Example: ".vch reminderon transfer?". Maximum size: 20. Default: "@".
+- command ".vch reminderoff" will set the text for the reminder tag item if it is not active. Example: ".vch reminderoff nothing!". Maximum size: 20. Default: "_"
 
 List of items:
 - hos -> Hold Short
@@ -68,7 +75,13 @@ List of items:
 - rqd -> Departure
 - ctl -> Cleared to Land
 - nlc -> Not Cleared to Land
+- cft -> Cleared for Takeoff
+- rem -> Reminder on
+- nrm -> Reminder off
 - example: ".vch option rqd off"
+
+Some other stuff:
+- command ".vch release DLH123" which will end the tracking of the specified callsign (might be usefull if an aircraft is still tagged but out of vis range)
 
 All settings get saved, if you confirm it in the saving dialog when closing Euroscope!
 
