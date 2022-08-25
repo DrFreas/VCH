@@ -23,6 +23,7 @@ internetConnection interNet(MY_PLUGIN_VERSION);
 CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILITY_CODE, MY_PLUGIN_NAME.c_str(), MY_PLUGIN_VERSION.c_str(), MY_PLUGIN_DEVELOPER.c_str(), MY_PLUGIN_COPYRIGHT.c_str()) {
 
 	RegisterTagItemType("Pending request", TAG_ITEM_VCH_REQ);
+	RegisterTagItemType("Pending request (short)", TAG_ITEM_VCH_SRQ);
 	RegisterTagItemType("Pending request time", TAG_ITEM_VCH_RQT);
 	RegisterTagItemFunction("Request menu", TAG_FUNC_VCH_RMEN);
 
@@ -234,6 +235,67 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 		}
 	}
 
+	if (ItemCode == TAG_ITEM_VCH_SRQ) {
+		if (flightPlan.IsValid() && hasRequest(flightPlan.GetCallsign())) {
+			string status = "-";
+			switch (request[flightPlan.GetCallsign()].type) {
+			case 'C':
+				if (colorRQC != RGB(1, 1, 1)) {
+					*pColorCode = TAG_COLOR_RGB_DEFINED;
+					*pRGB = getTextColor(TAG_ITEM_VCH_RQC);
+				}
+				else {
+					*pColorCode = TAG_COLOR_DEFAULT;
+				}
+				break;
+			case 'P':
+				if (colorRQP != RGB(1, 1, 1)) {
+					*pColorCode = TAG_COLOR_RGB_DEFINED;
+					*pRGB = getTextColor(TAG_ITEM_VCH_RQP);
+				}
+				else {
+					*pColorCode = TAG_COLOR_DEFAULT;
+				}
+				break;
+			case 'S':
+				if (colorRQS != RGB(1, 1, 1)) {
+					*pColorCode = TAG_COLOR_RGB_DEFINED;
+					*pRGB = getTextColor(TAG_ITEM_VCH_RQS);
+				}
+				else {
+					*pColorCode = TAG_COLOR_DEFAULT;
+				}
+				break;
+			case 'T':
+				if (colorRQT != RGB(1, 1, 1)) {
+					*pColorCode = TAG_COLOR_RGB_DEFINED;
+					*pRGB = getTextColor(TAG_ITEM_VCH_RQT);
+				}
+				else {
+					*pColorCode = TAG_COLOR_DEFAULT;
+				}
+				break;
+			case 'D':
+				if (colorRQD != RGB(1, 1, 1)) {
+					*pColorCode = TAG_COLOR_RGB_DEFINED;
+					*pRGB = getTextColor(TAG_ITEM_VCH_RQD);
+				}
+				else {
+					*pColorCode = TAG_COLOR_DEFAULT;
+				}
+				break;
+			default: *pColorCode = TAG_COLOR_DEFAULT;
+			}
+
+			status = request[flightPlan.GetCallsign()].type + getSequence(flightPlan.GetCallsign(), request[flightPlan.GetCallsign()].type);
+			strcpy_s(sItemString, 16, status.c_str());
+		}
+		else {
+			*pColorCode = TAG_COLOR_DEFAULT;
+			strcpy_s(sItemString, 16, "-");
+		}
+	}
+
 	if (ItemCode == TAG_ITEM_VCH_RQT) {
 		if (flightPlan.IsValid()) {
 			if (getStatus(&flightPlan) != "" && request[flightPlan.GetCallsign()].time != -1) {
@@ -406,7 +468,7 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 			}
 			request[flightPlan.GetCallsign()].lastSeen = getTime();
 		} else {
-			if (hasRequest(flightPlan.GetCallsign())) {
+			if (hasRequest(flightPlan.GetCallsign()) && (getTime() - request[flightPlan.GetCallsign()].time > 5)) {
 				request.erase(flightPlan.GetCallsign());
 			}
 		}

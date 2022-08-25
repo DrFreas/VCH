@@ -13,6 +13,7 @@ const int TAG_ITEM_VCH_RQP = 542;
 const int TAG_ITEM_VCH_RQS = 543;
 const int TAG_ITEM_VCH_RQT = 544;
 const int TAG_ITEM_VCH_RQD = 545;
+const int TAG_ITEM_VCH_SRQ = 546;
 const int TAG_FUNC_VCH_RMEN = 548;
 
 const int TAG_FUNC_VCH_REQRESET = 550;

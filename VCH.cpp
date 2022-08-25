@@ -26,6 +26,9 @@ void    __declspec (dllexport)    EuroScopePlugInExit(void)
 
 /*
 Changelog
+0.8.2:
+- added new tag item: short form of request (format: C1, P2 etc.)
+- added a buffer for erasing requests automatically, should fix a bug where one station deleted a request automaticaly which was set by another station
 0.8.1:
 - added "reminder" flag for whatever use. Manual trigger only and not synced with anyone (except it is active, you are tracking and handing off a tag)!
 0.8.0:
