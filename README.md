@@ -20,6 +20,7 @@ So far it has the following features:
 - since v0.8.1 there is a "CFT" flag which shows if the ground state is "DEPA" and within 2nm within the origin (can be changed)
 - since v0.8.1 there is a "reminder" item which switches states on command and can show two different things (not synced with anyone except yourself)
 - since v0.8.1 there is also a "reminder" item which only shows up if the reminder is active
+- since v0.8.2 there is a tag item for requests which is shorter than the default one
 
 This is what it does on its own:
 - blinking in its respective color every 5 seconds (more or less)
