@@ -483,8 +483,8 @@ void CVCHPlugin::OnFunctionCall(int FunctionId, const char * sItemString, POINT 
 	if (FunctionId == TAG_FUNC_VCH_RMEN) {
 		OpenPopupList(Area, "Request menu", 1);
 		if (!NORC) AddPopupListElement("Clearence", "", TAG_FUNC_VCH_CLEARENCE, false, POPUP_ELEMENT_NO_CHECKBOX, false);
-		if (!NORP) AddPopupListElement("Pushback", "", TAG_FUNC_VCH_PUSHBACK, false, POPUP_ELEMENT_NO_CHECKBOX, false);
 		if (!NORS) AddPopupListElement("Startup", "", TAG_FUNC_VCH_STARTUP, false, POPUP_ELEMENT_NO_CHECKBOX, false);
+		if (!NORP) AddPopupListElement("Pushback", "", TAG_FUNC_VCH_PUSHBACK, false, POPUP_ELEMENT_NO_CHECKBOX, false);
 		if (!NORT) AddPopupListElement("Taxi", "", TAG_FUNC_VCH_TAXI, false, POPUP_ELEMENT_NO_CHECKBOX, false);
 		if (!NORD) AddPopupListElement("Departure", "", TAG_FUNC_VCH_DEPARTURE, false, POPUP_ELEMENT_NO_CHECKBOX, false);
 		AddPopupListElement("No request", "", TAG_FUNC_VCH_REQRESET, false, POPUP_ELEMENT_NO_CHECKBOX, false);
@@ -494,12 +494,12 @@ void CVCHPlugin::OnFunctionCall(int FunctionId, const char * sItemString, POINT 
 		setStatus("C", &flightPlan);
 	}
 
-	if (FunctionId == TAG_FUNC_VCH_PUSHBACK) {
-		setStatus("P", &flightPlan);
-	}
-
 	if (FunctionId == TAG_FUNC_VCH_STARTUP) {
 		setStatus("S", &flightPlan);
+	}
+
+	if (FunctionId == TAG_FUNC_VCH_PUSHBACK) {
+		setStatus("P", &flightPlan);
 	}
 
 	if (FunctionId == TAG_FUNC_VCH_TAXI) {
@@ -672,17 +672,18 @@ bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
 				if (colorRQP == RGB(2, 2, 2)) {
 					colorRQP = TAG_YELLOW;
 				}
+				SaveDataToSettings("vch_c_rqs", "Color of tag item: Request Startup", colorCode.c_str());
+			}
+			else if (buffer == "rqt") {
+				colorRQT = stringToColor(colorCode);
+				if (colorRQT == RGB(2, 2, 2)) {
+					colorRQT = TAG_ORANGE;
+				}
 				SaveDataToSettings("vch_c_rqp", "Color of tag item: Request Pushback", colorCode.c_str());
 			} else if (buffer == "rqs") {
 				colorRQS = stringToColor(colorCode);
 				if (colorRQS == RGB(2, 2, 2)) {
 					colorRQS = TAG_YELLOW;
-				}
-				SaveDataToSettings("vch_c_rqs", "Color of tag item: Request Startup", colorCode.c_str());
-			} else if (buffer == "rqt") {
-				colorRQT = stringToColor(colorCode);
-				if (colorRQT == RGB(2, 2, 2)) {
-					colorRQT = TAG_ORANGE;
 				}
 				SaveDataToSettings("vch_c_rqt", "Color of tag item: Request Taxi", colorCode.c_str());
 			} else if (buffer == "rqd") {
