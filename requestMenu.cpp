@@ -673,8 +673,7 @@ bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
 					colorRQP = TAG_YELLOW;
 				}
 				SaveDataToSettings("vch_c_rqs", "Color of tag item: Request Startup", colorCode.c_str());
-			}
-			else if (buffer == "rqt") {
+			} else if (buffer == "rqt") {
 				colorRQT = stringToColor(colorCode);
 				if (colorRQT == RGB(2, 2, 2)) {
 					colorRQT = TAG_ORANGE;
