@@ -8,6 +8,7 @@ bool FLASH, sync, NOBLINK, NOCTLT, DEBUG = false;
 bool NORC, NORS, NORP, NORT, NORD = false;
 COLORREF colorHOS{ TAG_YELLOW }, colorRQC{ TAG_GREEN }, colorRQP{ TAG_YELLOW }, colorRQS{ TAG_YELLOW }, colorRQT{ TAG_ORANGE }, colorRQD{ TAG_RED }, colorNCTL{ TAG_RED }, colorCTL{ TAG_GREEN }, colorCFT{ TAG_ORANGE }, colorREM{ TAG_CYAN }, colorNRM{ TAG_GREY };
 double distanceCTL = 40;
+double distanceCTLBlink = 40;
 double distanceCFT = 2;
 string reminderSymbol = "@";
 string reminderSymbolOff = "_";
@@ -82,6 +83,10 @@ CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILI
 	if ((settingLoad = GetDataFromSettings("vch_ctl")) != NULL) {
 		if (atof(settingLoad) != 0)
 			distanceCTL = atof(settingLoad);
+	}
+	if ((settingLoad = GetDataFromSettings("vch_ctlblinkdist")) != NULL) {
+		if (atof(settingLoad) != 0)
+			distanceCTLBlink = atof(settingLoad);
 	}
 	if ((settingLoad = GetDataFromSettings("vch_cft")) != NULL) {
 		if (atof(settingLoad) != 0)
@@ -334,8 +339,16 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 			
 			if (!isClearedToLand(&flightPlan)) {	
 				if (colorNCTL != RGB(1, 1, 1)) {
-					*pColorCode = TAG_COLOR_RGB_DEFINED;
-					*pRGB = getTextColor(TAG_ITEM_VCH_CTL);
+					// Enable blinking if aircraft is reaching defined distance to aerodrome
+					if (flightPlan.GetDistanceToDestination() <= distanceCTLBlink) {
+						*pColorCode = TAG_COLOR_RGB_DEFINED;
+						*pRGB = getTextColor(TAG_ITEM_VCH_CTL);
+					}
+					// Otherwise just show NCTL color
+					else {
+						*pColorCode = TAG_COLOR_RGB_DEFINED;
+						*pRGB = colorNCTL;
+					}
 				} else {
 					*pColorCode = TAG_COLOR_DEFAULT;
 				}				
@@ -736,6 +749,14 @@ bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
 		buffer.erase(0, 13);
 		distanceCTL = stod(buffer);
 		SaveDataToSettings("vch_ctl", "Trigger distance of CTL flag", to_string(distanceCTL).c_str());
+		return true;
+	}
+
+	if (startsWith(".vch ctlblinkdist", sCommandLine)) {
+		string buffer{ sCommandLine };
+		buffer.erase(0, 13);
+		distanceCTLBlink = stod(buffer);
+		SaveDataToSettings("vch_ctlblinkdist", "Trigger distance of CTL blinking", to_string(distanceCTLBlink).c_str());
 		return true;
 	}
 
