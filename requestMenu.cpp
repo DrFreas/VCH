@@ -754,7 +754,7 @@ bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
 
 	if (startsWith(".vch ctlblinkdist", sCommandLine)) {
 		string buffer{ sCommandLine };
-		buffer.erase(0, 13);
+		buffer.erase(0, 18);
 		distanceCTLBlink = stod(buffer);
 		SaveDataToSettings("vch_ctlblinkdist", "Trigger distance of CTL blinking", to_string(distanceCTLBlink).c_str());
 		return true;
