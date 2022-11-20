@@ -88,11 +88,11 @@ CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILI
 			distanceCFT = atof(settingLoad);
 	}
 	if ((settingLoad = GetDataFromSettings("vch_rem")) != NULL) {
-		if (settingLoad != "")
+		if (strcmp(settingLoad, "") != 0)
 			reminderSymbol = settingLoad;
 	}
 	if ((settingLoad = GetDataFromSettings("vch_nrm")) != NULL) {
-		if (settingLoad != "")
+		if (strcmp(settingLoad, "") != 0)
 			reminderSymbolOff = settingLoad;
 	}
 	/*if ((settingLoad = GetDataFromSettings("vch_rto")) != NULL) {
@@ -1038,7 +1038,7 @@ void CVCHPlugin::switchReminder(CFlightPlan* flightPlan) {
 }
 
 bool CVCHPlugin::hasReminder(CFlightPlan* flightPlan) {
-	if (flightPlan->GetControllerAssignedData().GetFlightStripAnnotation(TAG_STRIP_ANNO_REM) == "REM") {
+	if (strcmp(flightPlan->GetControllerAssignedData().GetFlightStripAnnotation(TAG_STRIP_ANNO_REM), "REM") == 0) {
 		return true;
 	} else {
 		return false;
