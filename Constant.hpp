@@ -37,7 +37,7 @@ const int TAG_ITEM_VCH_CFT = 642;
 const int TAG_FUNC_VCH_CTL = 650;
 
 const int TAG_ITEM_VCH_REM = 340;
-const int TAG_ITEM_VCH_SRM = 340;
+const int TAG_ITEM_VCH_SRM = 341;
 const int TAG_FUNC_VCH_REM = 346;
 
 const int SYNC_REQUEST = 100;
