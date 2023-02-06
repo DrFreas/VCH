@@ -431,47 +431,64 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 		// Throw out request if ground state has been changed accordingly
 		if (hasRequest(flightPlan.GetCallsign())) {
 			if (flightPlan.GetClearenceFlag() && request[flightPlan.GetCallsign()].type == 'C') {
-				setStatus("", &flightPlan);
+				//setStatus("", &flightPlan);
+				deleteRequest(flightPlan.GetCallsign());
 			}
 			string groundState = string(flightPlan.GetGroundState());
 			if (groundState == "PUSH" && request[flightPlan.GetCallsign()].type == 'P') {
-				setStatus("", &flightPlan);
+				//setStatus("", &flightPlan);
+				deleteRequest(flightPlan.GetCallsign());
 			}
 			if (groundState == "STUP" && request[flightPlan.GetCallsign()].type == 'S') {
-				setStatus("", &flightPlan);
+				//setStatus("", &flightPlan);
+				deleteRequest(flightPlan.GetCallsign());
 			}
 			if (groundState == "TAXI" && request[flightPlan.GetCallsign()].type == 'T') {
-				setStatus("", &flightPlan);
+				//setStatus("", &flightPlan);
+				deleteRequest(flightPlan.GetCallsign());
 			}
 			if (groundState == "DEPA") {
-				setStatus("", &flightPlan);
+				//setStatus("", &flightPlan);
+				deleteRequest(flightPlan.GetCallsign());
 			}
 
 			// Throw out request if aircraft is definetly moving
 			if (RadarTarget.GetGS() > 20 && request[flightPlan.GetCallsign()].type != 'D') {
-				setStatus("", &flightPlan);
+				//setStatus("", &flightPlan);
+				deleteRequest(flightPlan.GetCallsign());
 			} else if (RadarTarget.GetGS() > 50) {
-				setStatus("", &flightPlan);
+				//setStatus("", &flightPlan);
+				deleteRequest(flightPlan.GetCallsign());
 			}
+
+			request[flightPlan.GetCallsign()].lastSeen = getTime();
 
 		}
 			
 		// Throw out CTL flag when callsign has landed (or crashed or so, anyway he is very slow for whatever reason)
 		if (RadarTarget.GetGS() < 20 && flightPlan.GetDistanceToDestination() <= 1 && isClearedToLand(&flightPlan)) {
-			setClearedToLand(&flightPlan, false);
+			setClearedToLand(&flightPlan);
 		}
+
+		/*if (flightPlan.GetControllerAssignedData().GetFlightStripAnnotation(TAG_STRIP_ANNO_REQ) != "") {
+			if (!hasRequest(flightPlan.GetCallsign())) {
+				string buf = flightPlan.GetControllerAssignedData().GetFlightStripAnnotation(TAG_STRIP_ANNO_REQ);
+				createRequest(flightPlan.GetCallsign(), buf);
+			}
+		} else if (hasRequest(flightPlan.GetCallsign()) && (flightPlan.GetControllerAssignedData().GetFlightStripAnnotation(TAG_STRIP_ANNO_REQ) == "")) {
+			deleteRequest(flightPlan.GetCallsign());
+		}*/
 	
 		// If there is a request, enter it into the internal data storage, else delete it
-		if (getStatus(&flightPlan) != "") {
+		/*if (getStatus(&flightPlan) != "") {
 			if (hasRequest(flightPlan.GetCallsign())) {
 				createRequest(flightPlan.GetCallsign(), getStatus(&flightPlan));
 			}
-			request[flightPlan.GetCallsign()].lastSeen = getTime();
 		} else {
 			if (hasRequest(flightPlan.GetCallsign()) && (getTime() - request[flightPlan.GetCallsign()].time > 5)) {
 				request.erase(flightPlan.GetCallsign());
 			}
-		}
+		}*/
 		
 	}
 
@@ -511,7 +528,8 @@ void CVCHPlugin::OnFunctionCall(int FunctionId, const char * sItemString, POINT 
 	}
 
 	if (FunctionId == TAG_FUNC_VCH_REQRESET) {
-		setStatus("", &flightPlan);
+		//setStatus("", &flightPlan);
+		deleteRequest(flightPlan.GetCallsign());
 	}
 
 	if (FunctionId == TAG_FUNC_VCH_HMEN) {
@@ -536,11 +554,7 @@ void CVCHPlugin::OnFunctionCall(int FunctionId, const char * sItemString, POINT 
 	}
 
 	if (FunctionId == TAG_FUNC_VCH_CTL) {
-		if (isClearedToLand(&flightPlan)) {
-			setClearedToLand(&flightPlan, false);
-		} else {
-			setClearedToLand(&flightPlan, true);
-		}
+		setClearedToLand(&flightPlan);
 	}
 
 	if (FunctionId == TAG_FUNC_VCH_REM) {
@@ -785,7 +799,7 @@ bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
 		return true;
 	}*/
 
-	/*if (startsWith(".vch debug", sCommandLine)) {
+	if (startsWith(".vch debug", sCommandLine)) {
 		DEBUG = !DEBUG;
 	}
 
@@ -800,7 +814,7 @@ bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
 		displayDebug("Eras: " + to_string(request[buffer].erase()));
 		displayDebug("Age : " + to_string(request[buffer].age()));
 		return true;
-	}*/
+	}
 
 	return false;
 }
@@ -831,18 +845,24 @@ void CVCHPlugin::createRequest(string callsign, string requestString) {
 	request[callsign] = { charThis(buf), stoi(requestString), (int)getTime()};
 }
 
+void CVCHPlugin::deleteRequest(string callsign) {
+	//FlightPlanSelect(callsign.c_str()).GetControllerAssignedData().SetFlightStripAnnotation(TAG_STRIP_ANNO_REQ, "");
+	request.erase(callsign);
+}
+
 bool CVCHPlugin::hasRequest(string callsign) {
 	auto lookup = request.find(callsign);
 	if (lookup != request.end()) {
-		return true;
-	} else {
-		return false;
-	}
+		if (request[callsign].time != -1)
+			return true;
+	} 
+
+	return false;
 }
 
 void CVCHPlugin::setStatus(string status, CFlightPlan *flightPlan) {
 
-	string buf = flightPlan->GetFlightPlanData().GetRemarks();
+	/*string buf = flightPlan->GetFlightPlanData().GetRemarks();
 
 	if (buf.find("/VCH/REQ/") != string::npos && buf.find("/REQ/VCH/") != string::npos) {
 		size_t buf1 = buf.find("/VCH/REQ/");
@@ -861,12 +881,23 @@ void CVCHPlugin::setStatus(string status, CFlightPlan *flightPlan) {
 	}
 
 	flightPlan->GetFlightPlanData().SetRemarks(buf.c_str());
-	flightPlan->GetFlightPlanData().AmendFlightPlan();
+	flightPlan->GetFlightPlanData().AmendFlightPlan();*/
+
+	if (hasRequest(flightPlan->GetCallsign())) {
+		deleteRequest(flightPlan->GetCallsign());
+	}
+
+	status += to_string(getTime());
+
+	createRequest(flightPlan->GetCallsign(), status);
+
+	//flightPlan->GetControllerAssignedData().SetFlightStripAnnotation(TAG_STRIP_ANNO_REQ, status.c_str());
+
 }
 
 // Get request from FlightPlan Remarks
 string CVCHPlugin::getStatus(CFlightPlan *flightPlan) {
-	string buf = flightPlan->GetFlightPlanData().GetRemarks();
+	/*string buf = flightPlan->GetFlightPlanData().GetRemarks();
 	if (buf.find("/VCH/REQ/") != string::npos && buf.find("/REQ/VCH/") != string::npos) {
 		size_t buf1 = buf.find("/VCH/REQ/");
 		size_t buf2 = buf.find("/REQ/VCH/");
@@ -883,6 +914,10 @@ string CVCHPlugin::getStatus(CFlightPlan *flightPlan) {
 
 		return buf;
 
+	}*/
+
+	if (hasRequest(flightPlan->GetCallsign())) {
+		return request[flightPlan->GetCallsign()].type + to_string(request[flightPlan->GetCallsign()].time);
 	}
 
 	return "";
@@ -948,8 +983,8 @@ COLORREF CVCHPlugin::getTextColor(int tagItem) {
 
 // Hold-short section
 
-void CVCHPlugin::setHoldShort(string holdShort, CFlightPlan *flightPlan) {
-	string buf = flightPlan->GetFlightPlanData().GetRemarks();
+void CVCHPlugin::setHoldShort(string where, CFlightPlan *flightPlan) {
+	/*string buf = flightPlan->GetFlightPlanData().GetRemarks();
 	if (holdShort.size() > 5) {
 		holdShort.resize(5);
 	}
@@ -970,11 +1005,14 @@ void CVCHPlugin::setHoldShort(string holdShort, CFlightPlan *flightPlan) {
 	}
 
 	flightPlan->GetFlightPlanData().SetRemarks(buf.c_str());
-	flightPlan->GetFlightPlanData().AmendFlightPlan();
+	flightPlan->GetFlightPlanData().AmendFlightPlan();*/
+
+	flightPlan->GetControllerAssignedData().SetFlightStripAnnotation(TAG_STRIP_ANNO_HOS, where.c_str());
+
 }
 
 string CVCHPlugin::getHoldShort(CFlightPlan *flightPlan) {
-	string buf = flightPlan->GetFlightPlanData().GetRemarks();
+	/*string buf = flightPlan->GetFlightPlanData().GetRemarks();
 	if (buf.find("/VCH/HOS/") != string::npos && buf.find("/HOS/VCH/") != string::npos) {
 		size_t buf1 = buf.find("/VCH/HOS/");
 		size_t buf2 = buf.find("/HOS/VCH/");
@@ -999,30 +1037,42 @@ string CVCHPlugin::getHoldShort(CFlightPlan *flightPlan) {
 		}
 		return buf;
 		
-	}
+	}*/
 
-	return "";
+	return flightPlan->GetControllerAssignedData().GetFlightStripAnnotation(TAG_STRIP_ANNO_HOS);;
 }
 
 // Cleared-to-land section
 
-void CVCHPlugin::setClearedToLand(CFlightPlan *flightPlan, bool state) {
+void CVCHPlugin::setClearedToLand(CFlightPlan *flightPlan) {
 	
-	string buf = flightPlan->GetFlightPlanData().GetRemarks();
+	/*string buf = flightPlan->GetFlightPlanData().GetRemarks();
 	if (state) {
 		buf += "/VCH/CTL/";	
 	} else {
 		buf.erase(buf.find("/VCH/CTL/"), 10);
 	}
 	flightPlan->GetFlightPlanData().SetRemarks(buf.c_str());
-	flightPlan->GetFlightPlanData().AmendFlightPlan();
+	flightPlan->GetFlightPlanData().AmendFlightPlan();*/
+
+	if (isClearedToLand(flightPlan)) {
+		flightPlan->GetControllerAssignedData().SetFlightStripAnnotation(TAG_STRIP_ANNO_CTL, "");
+	} else {
+		flightPlan->GetControllerAssignedData().SetFlightStripAnnotation(TAG_STRIP_ANNO_CTL, "CTL");
+	}
 }
 
 bool CVCHPlugin::isClearedToLand(CFlightPlan *flightPlan) {
-	string buf = flightPlan->GetFlightPlanData().GetRemarks();
+	/*string buf = flightPlan->GetFlightPlanData().GetRemarks();
 	if (buf.find("/VCH/CTL/") != string::npos) {
 		return true;
 	} else {
+		return false;
+	}*/
+	if (strcmp(flightPlan->GetControllerAssignedData().GetFlightStripAnnotation(TAG_STRIP_ANNO_CTL), "CTL") == 0) {
+		return true;
+	}
+	else {
 		return false;
 	}
 }
@@ -1046,13 +1096,6 @@ bool CVCHPlugin::hasReminder(CFlightPlan* flightPlan) {
 }
 
 // Common section
-
-void CVCHPlugin::delAnnotation(int field, CFlightPlan* flightPlan) {
-	flightPlan->GetControllerAssignedData().SetFlightStripAnnotation(field, "");
-	if (!flightPlan->GetFlightPlanData().IsAmended()) {
-		flightPlan->GetFlightPlanData().AmendFlightPlan();
-	}
-}
 
 void CVCHPlugin::displayMessage(string message) {
 	DisplayUserMessage("Message", "VCH", message.c_str(), false, false, false, false, false);

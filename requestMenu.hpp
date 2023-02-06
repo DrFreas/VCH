@@ -11,7 +11,7 @@ using namespace std;
 using namespace EuroScopePlugIn;
 
 const string MY_PLUGIN_NAME = "VCH";
-const string MY_PLUGIN_VERSION = "0.8.2hf";
+const string MY_PLUGIN_VERSION = "0.8.4";
 const string MY_PLUGIN_DEVELOPER = "Jan Fries";
 const string MY_PLUGIN_COPYRIGHT = "GPL v3";
 const string MY_PLUGIN_VIEW_AVISO = "Kleine Helferlein in Euroscope";
@@ -53,6 +53,8 @@ public:
 
 	virtual void createRequest(string callsign, string requestString);
 
+	virtual void deleteRequest(string callsign);
+
 	virtual bool hasRequest(string callsign);
 
 	virtual void setStatus(string status, CFlightPlan *flightPlan);
@@ -75,7 +77,7 @@ public:
 
 	// Cleared-to-land section
 
-	virtual void setClearedToLand(CFlightPlan *flightPlan, bool state);
+	virtual void setClearedToLand(CFlightPlan *flightPlan);
 
 	virtual bool isClearedToLand(CFlightPlan *flightPlan);
 
@@ -86,8 +88,6 @@ public:
 	virtual bool hasReminder(CFlightPlan *flightPlan);
 
 	// Common section
-
-	virtual void delAnnotation(int field, CFlightPlan *flightPlan);
 
 	virtual void versionCheck();
 

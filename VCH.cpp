@@ -26,6 +26,11 @@ void    __declspec (dllexport)    EuroScopePlugInExit(void)
 
 /*
 Changelog
+0.8.4:
+- request function works again, though no syncing at all for now throughout the complete plugin
+0.8.3:
+- deactivated amendments of flight plans and automatic removal of requests which caused endless amendments for some reason
+- reminder feature which got broken at some point should work again
 0.8.2hf:
 - fixed wrong version number
 0.8.2:

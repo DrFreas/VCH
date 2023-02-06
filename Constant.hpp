@@ -43,6 +43,9 @@ const int TAG_FUNC_VCH_REM = 346;
 const int SYNC_REQUEST = 100;
 
 const int TAG_STRIP_ANNO_REM = 8;
+const int TAG_STRIP_ANNO_CTL = 3;
+const int TAG_STRIP_ANNO_HOS = 4;
+const int TAG_STRIP_ANNO_REQ = 2;
 
 const COLORREF TAG_LIGHTGREEN = RGB(130, 190, 130);
 const COLORREF TAG_LIGHTYELLOW = RGB(190, 190, 130);
