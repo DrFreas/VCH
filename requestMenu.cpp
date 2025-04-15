@@ -493,43 +493,43 @@ void CVCHPlugin::OnGetTagItem(CFlightPlan flightPlan, CRadarTarget RadarTarget, 
 
 		// automatically disabling requests or CTL flag depending on the ground state
 		if (hasRequest(flightPlan.GetCallsign()) && request[flightPlan.GetCallsign()].age() > 3 && isAmendable(flightPlan.GetCallsign())) {
-			bool eraseRequest = false;
 			string callsign = flightPlan.GetCallsign();
+			bool eraseRequest = false;
 			if (flightPlan.GetClearenceFlag() && request[callsign].type == 'C') {
-					eraseRequest = true;
-					if (request[callsign].eraseTime == 0) {
-						displayDebug("Clear C " + callsign);
-						request[callsign].eraseTime = getTime();
-					}
+				eraseRequest = true;
+				if (request[callsign].eraseTime == 0) {
+					displayDebug("Clear C " + callsign);
+					request[callsign].eraseTime = getTime();
 				}
+			}
 			
 			// Throw out request if ground state has been changed accordingly
 			char groundState = checkGroundState(&flightPlan);
 			if (groundState == request[callsign].type) {
-					eraseRequest = true;
-					if (request[callsign].eraseTime == 0) {
-						string msg = "Clear ";
-						msg += groundState;
-						msg += " ";
-						msg += callsign;
-						displayDebug(msg);
-						request[callsign].eraseTime = getTime();
-					}				
-				}
+				eraseRequest = true;
+				if (request[callsign].eraseTime == 0) {
+					string msg = "Clear ";
+					msg += groundState;
+					msg += " ";
+					msg += callsign;
+					displayDebug(msg);
+					request[callsign].eraseTime = getTime();
+				}				
+			}
 			
 			// Throw out request if aircraft is definetly moving
 			if (RadarTarget.GetGS() > 20 && request[callsign].type != 'D') {
-					eraseRequest = true;
-					if (request[callsign].eraseTime == 0) {
-						displayDebug("Clear GS " + callsign);
-						request[callsign].eraseTime = getTime();
-					}
+				eraseRequest = true;
+				if (request[callsign].eraseTime == 0) {
+					displayDebug("Clear GS " + callsign);
+					request[callsign].eraseTime = getTime();
+				}
 			} else if (RadarTarget.GetGS() > 50) {
-					eraseRequest = true;
-					if (request[callsign].eraseTime == 0) {
-						displayDebug("Clear Speed > 50 " + callsign);
-						request[callsign].eraseTime = getTime();
-					}
+				eraseRequest = true;
+				if (request[callsign].eraseTime == 0) {
+					displayDebug("Clear Speed > 50 " + callsign);
+					request[callsign].eraseTime = getTime();
+				}
 			}
 			
 			// Erase request with time buffer, depending if you were creating the request or not
@@ -1112,6 +1112,7 @@ void CVCHPlugin::createRequest(string callsign, string requestString) {
 	requestString.erase(requestString.begin(), requestString.begin() + 1);
 	//request[callsign] = { charThis(buf), stoi(requestString), (int)getTime() };
 	request[callsign].type = charThis(buf);
+	request[callsign].byMe = true;
 	request[callsign].time = stoi(requestString);
 	request[callsign].lastSeen = (int)getTime();
 }
