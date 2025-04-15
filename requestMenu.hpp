@@ -11,24 +11,32 @@ using namespace std;
 using namespace EuroScopePlugIn;
 
 const string MY_PLUGIN_NAME = "VCH";
-const string MY_PLUGIN_VERSION = "0.8.4";
+const string MY_PLUGIN_VERSION = "0.8.6";
 const string MY_PLUGIN_DEVELOPER = "Jan Fries";
 const string MY_PLUGIN_COPYRIGHT = "GPL v3";
 const string MY_PLUGIN_VIEW_AVISO = "Kleine Helferlein in Euroscope";
 
-typedef struct requestBox {
+struct requestBox {
 	char type{};
-	int time = -1;
-	int lastSeen = -1;
+	time_t time = 0;
+	time_t lastSeen = 0;
+	bool byMe = false;
+	time_t eraseTime = 0;
 	bool active() {
 		return getTime() - 10 < lastSeen;
 	}
 	bool erase() {
 		return getTime() - 600 > lastSeen;
 	}
-	int age() {
+	time_t age() {
 		return getTime() - time;
 	}
+};
+
+struct landingBox {
+	bool byMe = false;
+	time_t eraseTime = 0;
+	bool exists = true;
 };
 
 class CVCHPlugin: public EuroScopePlugIn::CPlugIn
@@ -53,11 +61,13 @@ public:
 
 	virtual void createRequest(string callsign, string requestString);
 
-	virtual void deleteRequest(string callsign);
+	virtual void modRequest(string callsign, string requestString);
 
 	virtual bool hasRequest(string callsign);
 
 	virtual void setStatus(string status, CFlightPlan *flightPlan);
+
+	virtual char checkGroundState(CFlightPlan* flightPlan);
 
 	virtual string getStatus(CFlightPlan *flightPlan);
 
@@ -65,7 +75,7 @@ public:
 
 	virtual void cleanRequests();
 
-	virtual COLORREF getTimeColor(int time);
+	virtual COLORREF getTimeColor(time_t time);
 
 	virtual COLORREF getTextColor(int tagItem);
 
@@ -77,7 +87,7 @@ public:
 
 	// Cleared-to-land section
 
-	virtual void setClearedToLand(CFlightPlan *flightPlan);
+	virtual void setClearedToLand(CFlightPlan *flightPlan, bool state);
 
 	virtual bool isClearedToLand(CFlightPlan *flightPlan);
 
@@ -88,6 +98,8 @@ public:
 	virtual bool hasReminder(CFlightPlan *flightPlan);
 
 	// Common section
+
+	virtual void antiAmendSpam(CFlightPlan* flightPlan);
 
 	virtual void versionCheck();
 
@@ -102,6 +114,10 @@ public:
 	virtual bool isDeparting(double distance);
 
 	virtual bool getTracking(bool tracking);
+
+	virtual bool isAmendable(string callsign);
+
+	virtual int countRequests(map<string, requestBox>* request, char requestType);
 
 	//virtual int getAltitudeAboveAirport(CFlightPlan flightPlan);
 

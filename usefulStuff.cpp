@@ -19,7 +19,7 @@ char charThis(string yesThis) {
 }
 
 time_t getTime() {
-	return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	return time(NULL);
 }
 
 COLORREF stringToColor(string color) {
@@ -35,4 +35,10 @@ COLORREF stringToColor(string color) {
 	}
 	COLORREF colorCode = RGB(rgb[0], rgb[1], rgb[2]);
 	return colorCode;
+}
+
+bool isNumber(const string& s)
+{
+	return !s.empty() && find_if(s.begin(),
+		s.end(), [](unsigned char c) { return !isdigit(c); }) == s.end();
 }

@@ -211,6 +211,7 @@ const   int     TAG_ITEM_FUNCTION_SIMUL_NEXT_WAYPOINTS      = 42 ;
 const   int     TAG_ITEM_FUNCTION_SIMUL_HOLDING_POINTS      = 43 ;
 const   int     TAG_ITEM_FUNCTION_CONFLICT_DETECTION_TOOL2  = 44 ;
 const   int     TAG_ITEM_FUNCTION_SIMUL_ROUTES_POPUP        = 45 ;
+const   int     TAG_ITEM_FUNCTION_SET_GROUND_STATUS_ADVANCED= 46 ;
 
 const   int     TAG_DATA_UNCORRELATED_RADAR     = 1 ;
 const   int     TAG_DATA_FLIGHT_PLAN_TRACK      = 2 ;
@@ -1882,7 +1883,7 @@ public:
     const char * GetGroundState ( void ) const ;
     //-----------------------------------------------------------------
     //  Return :
-    //      The ground state of the AC (ST-UP, PUSH, TAXI, DEPA or empty).
+    //      The ground state of the AC (STUP, PUSH, TAXI, DEPA, ARR, TAXIIN, PARK or empty).
     //-----------------------------------------------------------------
 
 

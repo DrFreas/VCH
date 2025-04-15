@@ -47,6 +47,10 @@ const int TAG_STRIP_ANNO_CTL = 3;
 const int TAG_STRIP_ANNO_HOS = 4;
 const int TAG_STRIP_ANNO_REQ = 2;
 
+const int SEQ_NO_ZERO = 1;
+const int SEQ_LEAD_ZERO = 2;
+const int SEQ_TEN_ZERO = 3;
+
 const COLORREF TAG_LIGHTGREEN = RGB(130, 190, 130);
 const COLORREF TAG_LIGHTYELLOW = RGB(190, 190, 130);
 const COLORREF TAG_LIGHTRED = RGB(255, 130, 130);

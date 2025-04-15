@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include <chrono>
+#include <time.h>
 
 using namespace std;
 
@@ -13,3 +13,5 @@ char charThis(string yesThis);
 time_t getTime();
 
 COLORREF stringToColor(string color);
+
+bool isNumber(const string& s);
