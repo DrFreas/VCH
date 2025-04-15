@@ -11,6 +11,7 @@ So far it has the following features:
 - Request Departure (marked red by default) - new in v0.4.4
 - No Request
 - Synchronization between multiple instances of Euroscope (beware that it will only synchronize correctly when all instances are open already, it won't do an automatic sync when an instance is opened after a request has been set (yet, at least it is unreliable)
+  - currently disabled because of reasons...
 - Similar dropdown menu thing for "hold shorts" where you can enter up to 5 characters as a reminder out of the scratch pad
 - Since v0.5.0 it is possible to customize the colors of the tag items
 - Since v0.6.0 there is an online version checking, if the version is outdated it will let you know!
