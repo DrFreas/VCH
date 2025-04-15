@@ -186,23 +186,23 @@ CVCHPlugin::CVCHPlugin() : EuroScopePlugIn::CPlugIn(EuroScopePlugIn::COMPATIBILI
 		if (atof(settingLoad) != 0)
 			speedCTL = atof(settingLoad);
 	}
-	if ((settingLoad = GetDataFromSettings("vch_ten_c")) != NULL) {
+	if ((settingLoad = GetDataFromSettings("vch_ten_rqc")) != NULL) {
 		if (atof(settingLoad) != 0)
 			CTEN = atof(settingLoad);
 	}
-	if ((settingLoad = GetDataFromSettings("vch_ten_s")) != NULL) {
+	if ((settingLoad = GetDataFromSettings("vch_ten_rqs")) != NULL) {
 		if (atof(settingLoad) != 0)
 			STEN = atof(settingLoad);
 	}
-	if ((settingLoad = GetDataFromSettings("vch_ten_p")) != NULL) {
+	if ((settingLoad = GetDataFromSettings("vch_ten_rqp")) != NULL) {
 		if (atof(settingLoad) != 0)
 			PTEN = atof(settingLoad);
 	}
-	if ((settingLoad = GetDataFromSettings("vch_ten_t")) != NULL) {
+	if ((settingLoad = GetDataFromSettings("vch_ten_rqt")) != NULL) {
 		if (atof(settingLoad) != 0)
 			TTEN = atof(settingLoad);
 	}
-	if ((settingLoad = GetDataFromSettings("vch_ten_d")) != NULL) {
+	if ((settingLoad = GetDataFromSettings("vch_ten_rqd")) != NULL) {
 		if (atof(settingLoad) != 0)
 			DTEN = atof(settingLoad);
 	}
@@ -1022,6 +1022,7 @@ bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
 		return true;
 	}
 
+	// To-Do: harmonizing setting parameters
 	if (startsWith(".vch leadzero", sCommandLine)) {
 		string buffer{ sCommandLine };
 		buffer.erase(0, 14);
@@ -1029,9 +1030,9 @@ bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
 		double mod = 0;
 		string mods{ "vch_ten_" };
 		if (buffer.length() > 2) {
-			setting.erase(1, setting.length());
-			buffer.erase(0, 2);
-			if (setting == "c" || setting == "s" || setting == "p" || setting == "t" || setting == "d") {
+			setting.erase(3, setting.length());
+			buffer.erase(0, 4);
+			if (setting == "rqc" || setting == "rqs" || setting == "rqp" || setting == "rqt" || setting == "rqd") {
 				mods += setting;
 			} else {
 				displayError("Invalid first parameter for .vch leadzero: " + setting);
@@ -1049,15 +1050,15 @@ bool CVCHPlugin::OnCompileCommand(const char* sCommandLine) {
 		}
 		// To fix: invalid options which are not recognized change settings which don't do anything
 		string setMsg{ "Leading zero of: " + setting + " in sequence numbering" };
-		if (setting == "c")
+		if (setting == "rqc")
 			CTEN = mod;
-		if (setting == "p")
+		if (setting == "rqp")
 			PTEN = mod;
-		if (setting == "s")
+		if (setting == "rqs")
 			STEN = mod;
-		if (setting == "t")
+		if (setting == "rqt")
 			TTEN = mod;
-		if (setting == "d")
+		if (setting == "rqd")
 			DTEN = mod;
 		SaveDataToSettings(mods.c_str(), setMsg.c_str(), to_string(mod).c_str());
 		string value = "";
