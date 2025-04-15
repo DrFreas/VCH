@@ -61,11 +61,18 @@ What you can customize (so far):
 - command ".vch blink" or ".vch blink on" or ".vch blink off" to set blinking of the request /hold short item on or off (or toggle between those states).
 - command ".vch option" to set visibilities of individual items in the drop-down menu. Example: ".vch option rqd off"
 - command ".vch color" to set the color of the individual tag items, color code needs to be in 9 digit rgb, example: ".vch color rqc 255000000". 001001001 will set to Euroscope default, 002002002 will set back to default plugin settings.
-- command ".vch ctldist" will set the distance to the destination in nm of an aircraft to show the CTL tag. Example: ".vch ctldist 20". Default is 40nm. (former: .vch distance
+- command ".vch ctldist" will set the distance to the destination in nm of an aircraft to show the CTL tag. Example: ".vch ctldist 20". Default is 40nm. (former: .vch distance)
+- command ".vch ctlblinkdist" will set the distance to the destination in nm of an aircraft to enable the blinking of the CTL tag. Example: ".vch ctldist 20". Default is 40nm.
 - command ".vch cftdist" will set the distance from the origin in nm of an aircraft to show the CFT tag. Example: ".vch ctfdist 10". Default is 2.
 - command ".vch ctltrack" will switch between surpressing the tracking requirement of the CTL flag or not. So if set to "1", you won't have to track the aircraft to change the CTL flag.
 - command ".vch reminderon" will set the text for the reminder tag item if it is active. Example: ".vch reminderon transfer?". Maximum size: 20. Default: "@".
 - command ".vch reminderoff" will set the text for the reminder tag item if it is not active. Example: ".vch reminderoff nothing!". Maximum size: 20. Default: "_"
+- command ".vch leadzero" will set the behaviour of leading zeros in the request list. For every type seperately. Example: ".vch leadzero rqc 2".
+  - first parameter for type: rqc etc.
+  - second parameter for following behaviour:
+    - no leading zero at all: 1
+    - always leading zero: 2
+    - leading zero if more than 10 requests: 3
 
 List of items:
 - hos -> Hold Short
